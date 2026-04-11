@@ -81,6 +81,9 @@ using (var scope = app.Services.CreateScope())
 
 // --- SEKCJA POTOKU HTTP (Middleware) ---
 
+// CORS musi być PIERWSZY - żeby nagłówki były wysyłane nawet przy błędach 500
+app.UseCors();
+
 // Uruchamiamy Swaggera zawsze w fazie deweloperskiej i testowej
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -89,11 +92,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = string.Empty;
 });
 
-// Ważne: W Dockerze często używamy HTTP wewnątrz sieci,
-// więc wyłączamy wymuszone przekierowanie na HTTPS dla uproszczenia nauki
 // app.UseHttpsRedirection();
-
-app.UseCors();
 
 // Mapowanie kontrolerów (to sprawi, że TasksController zacznie działać)
 app.MapControllers();

@@ -1,3 +1,14 @@
 node_modules/
 dist/
 build/
+
+# .NET build artifacts
+bin/
+obj/
+publish/
+
+# Deploy packages
+*.zip
+
+# Frontend build
+frontend/dist/
