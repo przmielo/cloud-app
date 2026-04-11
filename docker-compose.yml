@@ -40,7 +40,18 @@ services:
       - "1433:1433"
     networks:
       - cloud-network
+    # Trwałość danych: named volume gwarantuje, że dane przeżyją "docker compose down"
+    # (bez flagi -v). Nawet po "docker compose down -v" dane są odtwarzane dzięki
+    # migracjom EF Core uruchamianym przy starcie backendu.
+    volumes:
+      - sqlserver-data:/var/opt/mssql
 
 networks:
   cloud-network:
     driver: bridge
+
+# Named volume – Docker zarządza nim niezależnie od cyklu życia kontenera.
+# Dane nie zginą po "docker compose down" (tylko "docker compose down -v" je usuwa).
+volumes:
+  sqlserver-data:
+    name: cloud-app-sqlserver-data

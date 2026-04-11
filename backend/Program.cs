@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// --- AUTOMATYCZNE TWORZENIE BAZY I DANYCH ---
+// --- AUTOMATYCZNE MIGRACJE I SEED DANYCH ---
 
 using (var scope = app.Services.CreateScope())
 {
@@ -43,10 +43,12 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<AppDbContext>();
 
-        // 1. Tworzy bazę i tabele, jeśli ich nie ma
-        context.Database.EnsureCreated();
+        // 1. Uruchamia wszystkie oczekujące migracje EF Core (tworzy bazę i tabele
+        //    zgodnie z historią migracji zamiast EnsureCreated, co daje pełną
+        //    kontrolę nad schematem i możliwość jego ewolucji).
+        context.Database.Migrate();
 
-        // 2. Dodaje startowe dane, jeśli tabela jest pusta (opcjonalne, ale fajne)
+        // 2. Seed: dodaje startowe dane, jeśli tabela jest pusta
         if (!context.Tasks.Any())
         {
             context.Tasks.AddRange(
@@ -59,7 +61,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Błąd podczas tworzenia bazy: {ex.Message}");
+        Console.WriteLine($"Błąd podczas migracji bazy: {ex.Message}");
     }
 }
 

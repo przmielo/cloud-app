@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CloudBackend.Data;
 using CloudBackend.Models;
+using CloudBackend.DTOs;
 
 namespace CloudBackend.Controllers;
 
@@ -17,39 +18,64 @@ public class TasksController : ControllerBase
         _context = context;
     }
 
-    [HttpGet] // 1. Lista (READ ALL)
-    public async Task<ActionResult> GetAll()
+    // ─── Pomocnicza metoda mapowania encji → DTO ──────────────────────────────
+    private static TaskReadDto MapToDto(CloudTask task) => new TaskReadDto
     {
-        return Ok(await _context.Tasks.ToListAsync());
+        Id          = task.Id,
+        Name        = task.Name,
+        IsCompleted = task.IsCompleted
+    };
+
+    [HttpGet] // 1. Lista (READ ALL)
+    public async Task<ActionResult<IEnumerable<TaskReadDto>>> GetAll()
+    {
+        // Mapowanie na TaskReadDto – API ujawnia wyłącznie pola zdefiniowane w DTO,
+        // ukrywając wszelkie wewnętrzne pola systemowe encji bazodanowej.
+        var tasks = await _context.Tasks.ToListAsync();
+        return Ok(tasks.Select(MapToDto));
     }
 
     [HttpGet("{id}")] // 2. Szczegóły (READ ONE)
-    public async Task<ActionResult> GetById(int id)
+    public async Task<ActionResult<TaskReadDto>> GetById(int id)
     {
         var task = await _context.Tasks.FindAsync(id);
-        return task == null ? NotFound() : Ok(task);
+        if (task == null)
+            return NotFound();
+
+        // Zwracamy DTO zamiast czystej encji – klient nie widzi pól systemowych
+        return Ok(MapToDto(task));
     }
 
     [HttpPost] // 3. Dodaj (CREATE)
-    public async Task<ActionResult> Create(CloudTask task)
+    public async Task<ActionResult<TaskReadDto>> Create(TaskCreateDto dto)
     {
+        // Mapowanie DTO → encja (Id zostanie wygenerowane przez bazę)
+        var task = new CloudTask
+        {
+            Name        = dto.Name,
+            IsCompleted = dto.IsCompleted
+        };
+
         _context.Tasks.Add(task);
         await _context.SaveChangesAsync();
 
-        // Zwraca status 201 Created oraz lokalizację nowego zasobu
-        return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
+        // Zwracamy DTO nowo utworzonego zasobu wraz z nagłówkiem Location (201 Created)
+        return CreatedAtAction(nameof(GetById), new { id = task.Id }, MapToDto(task));
     }
 
     [HttpPut("{id}")] // 4. Edytuj (UPDATE)
-    public async Task<ActionResult> Update(int id, CloudTask task)
+    public async Task<ActionResult> Update(int id, TaskCreateDto dto)
     {
-        if (id != task.Id)
-            return BadRequest("ID mismatch");
+        var task = await _context.Tasks.FindAsync(id);
+        if (task == null)
+            return NotFound();
 
-        _context.Entry(task).State = EntityState.Modified;
+        task.Name        = dto.Name;
+        task.IsCompleted = dto.IsCompleted;
+
         await _context.SaveChangesAsync();
 
-        return NoContent(); // Status 204 - operacja udana, brak danych do odesłania
+        return NoContent(); // Status 204 – operacja udana, brak danych do odesłania
     }
 
     [HttpDelete("{id}")] // 5. Usuń (DELETE)
