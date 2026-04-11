@@ -26,23 +26,20 @@ public class TasksController : ControllerBase
         IsCompleted = task.IsCompleted
     };
 
-    [HttpGet] // 1. Lista (READ ALL)
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<TaskReadDto>>> GetAll()
     {
-        // Mapowanie na TaskReadDto – API ujawnia wyłącznie pola zdefiniowane w DTO,
-        // ukrywając wszelkie wewnętrzne pola systemowe encji bazodanowej.
         var tasks = await _context.Tasks.ToListAsync();
         return Ok(tasks.Select(MapToDto));
     }
 
-    [HttpGet("{id}")] // 2. Szczegóły (READ ONE)
+    [HttpGet("{id}")]
     public async Task<ActionResult<TaskReadDto>> GetById(int id)
     {
         var task = await _context.Tasks.FindAsync(id);
         if (task == null)
             return NotFound();
 
-        // Zwracamy DTO zamiast czystej encji – klient nie widzi pól systemowych
         return Ok(MapToDto(task));
     }
 
