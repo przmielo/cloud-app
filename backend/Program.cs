@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// --- AUTOMATYCZNE MIGRACJE I SEED DANYCH ---
+// --- AUTOMATYCZNE TWORZENIE BAZY I SEED DANYCH ---
 
 using (var scope = app.Services.CreateScope())
 {
@@ -43,12 +43,25 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<AppDbContext>();
 
-        // 1. Uruchamia wszystkie oczekujące migracje EF Core (tworzy bazę i tabele
-        //    zgodnie z historią migracji zamiast EnsureCreated, co daje pełną
-        //    kontrolę nad schematem i możliwość jego ewolucji).
-        context.Database.Migrate();
+        // Strategia hybrydowa:
+        // 1. Próbuje zastosować migracje EF Core (jeśli istnieją w assembly).
+        //    Folder backend/Migrations/ zawiera historię zmian schematu (5.3).
+        // 2. Jeśli migracje nie są dostępne w runtime, cofa się do EnsureCreated()
+        //    – tworzy bazę i tabele na podstawie aktualnego modelu.
+        var pendingMigrations = context.Database.GetPendingMigrations().ToList();
+        if (pendingMigrations.Any())
+        {
+            Console.WriteLine($"Stosowanie {pendingMigrations.Count} migracji EF Core...");
+            context.Database.Migrate();
+        }
+        else
+        {
+            // EnsureCreated jest idempotentne: tworzy schemat jeśli nie istnieje,
+            // nie nadpisuje istniejących danych.
+            context.Database.EnsureCreated();
+        }
 
-        // 2. Seed: dodaje startowe dane, jeśli tabela jest pusta
+        // Seed: dodaje startowe dane, jeśli tabela jest pusta
         if (!context.Tasks.Any())
         {
             context.Tasks.AddRange(
@@ -57,11 +70,12 @@ using (var scope = app.Services.CreateScope())
             );
 
             context.SaveChanges();
+            Console.WriteLine("Seed danych dodany pomyślnie.");
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Błąd podczas migracji bazy: {ex.Message}");
+        Console.WriteLine($"Błąd podczas inicjalizacji bazy: {ex.Message}");
     }
 }
 
