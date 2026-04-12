@@ -2,6 +2,9 @@ node_modules/
 dist/
 build/
 
+# Claude Code internal folder
+.claude/
+
 # .NET build artifacts
 bin/
 obj/
