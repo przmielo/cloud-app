@@ -1,8 +1,21 @@
+using Azure.Identity;
 using CloudBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using CloudBackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// --- AZURE KEY VAULT ---
+// Odczytuje URI magazynu kluczy z konfiguracji (appsettings / zmienne środowiskowe)
+var keyVaultUri = builder.Configuration["KeyVaultUri"];
+if (!string.IsNullOrEmpty(keyVaultUri))
+{
+    // DefaultAzureCredential działa zarówno lokalnie (az login)
+    // jak i w Azure App Service (Managed Identity) – bez żadnych haseł w kodzie.
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential());
+}
 
 // --- SEKCJA USŁUG (Dependency Injection) ---
 
@@ -13,8 +26,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3. Pobranie Connection Stringa (zmiennej środowiskowej z Dockera)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// 3. Pobranie Connection Stringa z Key Vault (sekret: DbConnectionString)
+//    lub z konfiguracji lokalnej jako fallback dla Dockera
+var connectionString =
+    builder.Configuration["DbConnectionString"]
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 // 4. Rejestracja bazy danych MS SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
