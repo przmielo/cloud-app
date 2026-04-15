@@ -6,10 +6,13 @@ on:
       - main
     paths:
       - 'backend/**'
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -19,18 +22,41 @@ jobs:
         with:
           dotnet-version: '10.x'
 
-      - name: Restore dependencies
-        run: dotnet restore backend/CloudBackend.csproj
-
       - name: Build
-        run: dotnet build backend/CloudBackend.csproj --configuration Release --no-restore
+        run: dotnet build backend/CloudBackend.csproj --configuration Release
 
       - name: Publish
-        run: dotnet publish backend/CloudBackend.csproj --configuration Release --output ./publish --no-build
+        run: dotnet publish backend/CloudBackend.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Deploy to Azure App Service
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A7AC986B1AFF4A4BA0CE6E60D4FA6EA2 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FD8971E8F2D141ABB6B9281D82006B70 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_50B06A60378B4487961E9719B8081C2A }}
+
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'cloud-task-manager-api-pk'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./publish
+          slot-name: 'Production'
+          package: .
