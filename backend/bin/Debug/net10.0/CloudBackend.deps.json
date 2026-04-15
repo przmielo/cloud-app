@@ -8,6 +8,8 @@
     ".NETCoreApp,Version=v10.0": {
       "CloudBackend/1.0.0": {
         "dependencies": {
+          "Azure.Extensions.AspNetCore.Configuration.Secrets": "1.3.2",
+          "Azure.Identity": "1.14.2",
           "Microsoft.AspNetCore.OpenApi": "10.0.3",
           "Microsoft.EntityFrameworkCore": "10.0.3",
           "Microsoft.EntityFrameworkCore.Design": "10.0.3",
@@ -31,6 +33,18 @@
           }
         }
       },
+      "Azure.Extensions.AspNetCore.Configuration.Secrets/1.3.2": {
+        "dependencies": {
+          "Azure.Core": "1.47.1",
+          "Azure.Security.KeyVault.Secrets": "4.6.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Azure.Extensions.AspNetCore.Configuration.Secrets.dll": {
+            "assemblyVersion": "1.3.2.0",
+            "fileVersion": "1.300.224.41501"
+          }
+        }
+      },
       "Azure.Identity/1.14.2": {
         "dependencies": {
           "Azure.Core": "1.47.1",
@@ -41,6 +55,17 @@
           "lib/net8.0/Azure.Identity.dll": {
             "assemblyVersion": "1.14.2.0",
             "fileVersion": "1.1400.225.36004"
+          }
+        }
+      },
+      "Azure.Security.KeyVault.Secrets/4.6.0": {
+        "dependencies": {
+          "Azure.Core": "1.47.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Azure.Security.KeyVault.Secrets.dll": {
+            "assemblyVersion": "4.6.0.0",
+            "fileVersion": "4.600.24.11403"
           }
         }
       },
@@ -820,12 +845,26 @@
       "path": "azure.core/1.47.1",
       "hashPath": "azure.core.1.47.1.nupkg.sha512"
     },
+    "Azure.Extensions.AspNetCore.Configuration.Secrets/1.3.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uMIU++B4XV4lW8+59rKi2Qph6tj2V7tHyLcwVR7OQRmA8cX0VVFhj2DyMahhoF9j4Jk99WA08Nsznd5RwC5Zfw==",
+      "path": "azure.extensions.aspnetcore.configuration.secrets/1.3.2",
+      "hashPath": "azure.extensions.aspnetcore.configuration.secrets.1.3.2.nupkg.sha512"
+    },
     "Azure.Identity/1.14.2": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-YhNMwOTwT+I2wIcJKSdP0ADyB2aK+JaYWZxO8LSRDm5w77LFr0ykR9xmt2ZV5T1gaI7xU6iNFIh/yW1dAlpddQ==",
       "path": "azure.identity/1.14.2",
       "hashPath": "azure.identity.1.14.2.nupkg.sha512"
+    },
+    "Azure.Security.KeyVault.Secrets/4.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vwPceoznuT6glvirZcXlaCQrh1uzTSxpZUi2hRFNumHiS3hVyqIXI5fgWiLtlBzwqPJMTr0flUoSvGKjXXQlfg==",
+      "path": "azure.security.keyvault.secrets/4.6.0",
+      "hashPath": "azure.security.keyvault.secrets.4.6.0.nupkg.sha512"
     },
     "Humanizer.Core/2.14.1": {
       "type": "package",

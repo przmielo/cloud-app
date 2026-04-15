@@ -5,13 +5,9 @@ using CloudBackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- AZURE KEY VAULT ---
-// Odczytuje URI magazynu kluczy z konfiguracji (appsettings / zmienne środowiskowe)
 var keyVaultUri = builder.Configuration["KeyVaultUri"];
 if (!string.IsNullOrEmpty(keyVaultUri))
 {
-    // DefaultAzureCredential działa zarówno lokalnie (az login)
-    // jak i w Azure App Service (Managed Identity) – bez żadnych haseł w kodzie.
     builder.Configuration.AddAzureKeyVault(
         new Uri(keyVaultUri),
         new DefaultAzureCredential());

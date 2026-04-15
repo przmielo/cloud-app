@@ -1,0 +1,36 @@
+name: Deploy Backend – Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencies
+        run: dotnet restore backend/CloudBackend.csproj
+
+      - name: Build
+        run: dotnet build backend/CloudBackend.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish backend/CloudBackend.csproj --configuration Release --output ./publish --no-build
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'cloud-task-manager-api-pk'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish

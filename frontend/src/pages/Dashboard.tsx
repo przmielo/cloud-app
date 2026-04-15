@@ -26,6 +26,18 @@ const Dashboard = () => {
 
   useEffect(() => { fetchTasks(); }, []);
 
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/tasks/${id}`);
+      setSuccess("Zadanie zostało usunięte!");
+      setError("");
+      fetchTasks();
+    } catch (err: any) {
+      console.error(err);
+      setError("Błąd podczas usuwania zadania.");
+    }
+  };
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) return;
@@ -50,7 +62,9 @@ const Dashboard = () => {
 
   return (
     <div style={{ padding: '20px', textAlign: 'center', fontFamily: 'Arial, sans-serif' }}>
-      <h1>☁️ Cloud App Dashboard</h1>
+      <h1 style={{ color: '#0d6efd', borderBottom: '3px solid #0d6efd', paddingBottom: '10px' }}>
+        ☁️ Cloud App Dashboard
+      </h1>
 
       {/* ── Formularz dodawania zadań (5.4) ───────────────────────────────── */}
       <form
@@ -154,9 +168,28 @@ const Dashboard = () => {
                 borderLeft: item.isCompleted ? '5px solid green' : '5px solid gray',
                 width: '350px',
                 textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
-              <strong>{item.name}</strong> {item.isCompleted ? '✅' : '⏳'}
+              <span>
+                <strong>{item.name}</strong> {item.isCompleted ? '✅' : '⏳'}
+              </span>
+              <button
+                onClick={() => handleDelete(item.id)}
+                style={{
+                  background: '#dc3545',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '5px',
+                  padding: '4px 12px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                }}
+              >
+                Usuń
+              </button>
             </li>
           ))}
         </ul>

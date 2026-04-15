@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "qSl/qJ+sQSc=",
+  "dgSpecHash": "MuxprrGLGrU=",
   "success": true,
   "projectFilePath": "/Users/przemyslawkus/Documents/cloud-app/backend/CloudBackend.csproj",
   "expectedPackageFiles": [
     "/Users/przemyslawkus/.nuget/packages/azure.core/1.47.1/azure.core.1.47.1.nupkg.sha512",
+    "/Users/przemyslawkus/.nuget/packages/azure.extensions.aspnetcore.configuration.secrets/1.3.2/azure.extensions.aspnetcore.configuration.secrets.1.3.2.nupkg.sha512",
     "/Users/przemyslawkus/.nuget/packages/azure.identity/1.14.2/azure.identity.1.14.2.nupkg.sha512",
+    "/Users/przemyslawkus/.nuget/packages/azure.security.keyvault.secrets/4.6.0/azure.security.keyvault.secrets.4.6.0.nupkg.sha512",
     "/Users/przemyslawkus/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/przemyslawkus/.nuget/packages/microsoft.aspnetcore.openapi/10.0.3/microsoft.aspnetcore.openapi.10.0.3.nupkg.sha512",
     "/Users/przemyslawkus/.nuget/packages/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",

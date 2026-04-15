@@ -178,3 +178,5 @@
 /Users/przemyslawkus/Documents/cloud-app/backend/bin/Debug/net10.0/publish/publish/CloudBackend.staticwebassets.endpoints.json
 /Users/przemyslawkus/Documents/cloud-app/backend/bin/Debug/net10.0/publish/publish/package-lock.json
 /Users/przemyslawkus/Documents/cloud-app/backend/bin/Debug/net10.0/publish/publish/package.json
+/Users/przemyslawkus/Documents/cloud-app/backend/bin/Debug/net10.0/Azure.Extensions.AspNetCore.Configuration.Secrets.dll
+/Users/przemyslawkus/Documents/cloud-app/backend/bin/Debug/net10.0/Azure.Security.KeyVault.Secrets.dll
