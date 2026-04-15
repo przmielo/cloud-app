@@ -19,5 +19,4 @@ Ten projekt został zaplanowany z myślą o usługach PaaS (Platform as a Servic
 * [x] **Artefakt 5:** Stabilność API (DTO), trwałość danych (named volumes), migracje EF Core, formularz React.
 * [x] **Artefakt 6:** Host na Azure.
 * [x] **Artefakt 7:** Azure Key Vault i Managed Identity.
-
-> **Informacja:** Ten plik będzie ewoluował. W kolejnych etapach dodamy instrukcję wdrożenia CI/CD na platformę Azure.
+* [x] **Artefakt 8:** Wybudowany “bezpiecznik” i wdrożony automatu CI/CD
