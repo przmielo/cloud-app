@@ -13,21 +13,32 @@ services:
     depends_on:
       - backend
 
-  # Warstwa Logiki (.NET 9)
+  # Warstwa Logiki (.NET) – główne API
   backend:
     build: ./backend
     container_name: cloud-backend
     ports:
-      - "8081:8080" # Mapujemy port 8080 kontenera (standard .NET 9) na 8081 hosta
+      - "8081:8080"
     environment:
       - ASPNETCORE_HTTP_PORTS=8080
-      # UWAGA: Hasło w tekście jawnym zostanie zabezpieczone później, ale dla celów demonstracyjnych jest tutaj umieszczone.
-      # W praktyce należy używać zmiennych środowiskowych lub menedżerów sekretów.
-      - ConnectionStrings__DefaultConnection=Server=cloud-db;Database=CloudAppDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=cloud-db;Database=CreditRiskDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True
+      - ScoringServiceUrl=http://scoring-service:3001
     networks:
       - cloud-network
     depends_on:
       - cloud-db
+      - scoring-service
+
+  # Mikrousługa scoringowa (Node.js)
+  scoring-service:
+    build: ./scoring-service
+    container_name: scoring-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+    networks:
+      - cloud-network
 
   # Warstwa Danych (SQL Edge)
   cloud-db:
@@ -40,9 +51,6 @@ services:
       - "1433:1433"
     networks:
       - cloud-network
-    # Trwałość danych: named volume gwarantuje, że dane przeżyją "docker compose down"
-    # (bez flagi -v). Nawet po "docker compose down -v" dane są odtwarzane dzięki
-    # migracjom EF Core uruchamianym przy starcie backendu.
     volumes:
       - sqlserver-data:/var/opt/mssql
 
@@ -50,8 +58,6 @@ networks:
   cloud-network:
     driver: bridge
 
-# Named volume – Docker zarządza nim niezależnie od cyklu życia kontenera.
-# Dane nie zginą po "docker compose down" (tylko "docker compose down -v" je usuwa).
 volumes:
   sqlserver-data:
-    name: cloud-app-sqlserver-data
+    name: credit-risk-sqlserver-data

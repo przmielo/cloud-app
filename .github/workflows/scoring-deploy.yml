@@ -1,0 +1,39 @@
+name: Deploy Scoring Service to Azure
+
+on:
+  push:
+    branches: [main]
+    paths: ['scoring-service/**']
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: scoring-service/package-lock.json
+
+      - name: Install dependencies
+        working-directory: scoring-service
+        run: npm ci
+
+      - name: Run tests
+        working-directory: scoring-service
+        run: npm test --if-present
+
+      - name: Zip for deployment
+        working-directory: scoring-service
+        run: zip -r ../scoring-deploy.zip . -x "node_modules/*" "*.test.js"
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.SCORING_APP_NAME }}
+          publish-profile: ${{ secrets.SCORING_PUBLISH_PROFILE }}
+          package: scoring-deploy.zip
