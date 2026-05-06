@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loanApi, LoanApplicationCreateDto } from '../services/api';
+import { loanApi, type LoanApplicationCreateDto } from '../services/api';
 
 const STEPS = ['Dane osobowe', 'Zatrudnienie', 'Zobowiązania', 'Kredyt'];
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loanApi, LoanApplicationReadDto } from '../services/api';
+import { loanApi, type LoanApplicationReadDto } from '../services/api';
 
 const OUTCOME_LABELS: Record<string, { label: string; color: string }> = {
   approve: { label: 'Akceptacja', color: '#16a34a' },

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { loanApi, LoanApplicationReadDto } from '../services/api';
+import { loanApi, type LoanApplicationReadDto } from '../services/api';
 
 const OUTCOME_CONFIG = {
   approve: { label: 'AKCEPTACJA', color: '#16a34a', bg: '#dcfce7', emoji: '✅' },
