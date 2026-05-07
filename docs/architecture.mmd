@@ -1,11 +1,15 @@
 C4Context
-    title Diagram kontenerów (C4) - Cloud Task Manager
-    Person(user, "Użytkownik", "Zarządza swoimi zadaniami")
-    Enterprise_Boundary(c1, "System Cloud Task Manager") {
-        Container(web_app, "Frontend (React 19)", "Vite, HTTPS", "Interfejs użytkownika")
-        Container(api, "Backend (API)", ".NET 9 / Node 24", "Logika biznesowa, REST API")
-        ContainerDb(db, "Baza danych (SQL)", "Azure SQL Serverless", "Przechowuje dane i zadania")
+    title Diagram kontenerów (C4) - Cloud Credit Risk App
+    Person(client, "Klient", "Składa wniosek kredytowy")
+    Enterprise_Boundary(c1, "System oceny ryzyka kredytowego") {
+        Container(web_app, "Frontend (React 19)", "Vite + TypeScript", "Formularz wniosku, wynik scoringu, historia")
+        Container(api, "Backend API", ".NET 10 + EF Core", "Walidacja, przyjmowanie wniosków, persystencja decyzji")
+        Container(scoring, "Scoring Service", "Node.js 20 + Express", "Kalkulatory DStI/PTI, scorecard 300-850, decyzja")
+        ContainerDb(db, "Azure SQL Database", "CloudTaskDB", "LoanApplications, Decisions, Users")
+        Container(kv, "Azure Key Vault", "Sekrety", "ConnectionString, ScoringServiceUrl")
     }
-    Rel(user, web_app, "Korzysta z", "HTTPS")
-    Rel(web_app, api, "Wysyła zapytania", "JSON/HTTPS")
-    Rel(api, db, "Odczytuje/Zapisuje", "T-SQL / Port 1433")
+    Rel(client, web_app, "Korzysta z", "HTTPS")
+    Rel(web_app, api, "POST /api/loan-applications", "JSON/HTTPS")
+    Rel(api, scoring, "POST /api/score", "JSON/HTTPS")
+    Rel(api, db, "Odczyt/zapis", "T-SQL / 1433")
+    Rel(api, kv, "Odczyt sekretów", "Managed Identity")

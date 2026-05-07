@@ -1,6 +1,29 @@
 @CloudBackend_HostAddress = http://localhost:5088
 
-GET {{CloudBackend_HostAddress}}/weatherforecast/
+### Lista wniosków
+GET {{CloudBackend_HostAddress}}/api/loan-applications
 Accept: application/json
+
+### Złożenie wniosku
+POST {{CloudBackend_HostAddress}}/api/loan-applications
+Content-Type: application/json
+
+{
+  "age": 35,
+  "maritalStatus": "married",
+  "dependents": 2,
+  "education": "higher",
+  "employmentType": "permanent",
+  "employmentYears": 8,
+  "monthlyNetIncome": 12000,
+  "monthlyObligations": 800,
+  "livingCosts": 4000,
+  "loanAmount": 50000,
+  "loanTermMonths": 36,
+  "loanPurpose": "consumer",
+  "pastLoans": 2,
+  "latePayments": 0,
+  "creditHistoryMonths": 60
+}
 
 ###

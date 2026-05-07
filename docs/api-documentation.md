@@ -1,194 +1,178 @@
-# Cloud Task Manager – Dokumentacja API
+# Cloud Credit Risk App – Dokumentacja API
 
-**Base URL:** `https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api`  
-**Swagger UI:** `/swagger`  
-**Format:** JSON  
 **Autor:** Przemysław Kuś (98953)
+**Format:** JSON
+
+System składa się z dwóch publicznych API:
+
+1. **Backend API (.NET)** — przyjmuje wnioski kredytowe, orkiestruje scoring, zapisuje decyzje.
+2. **Scoring Service (Node.js)** — czysta funkcja: dane wniosku → score + decyzja.
 
 ---
 
-## Model danych
+## 1. Backend API (.NET)
 
-### CloudTask
+**Base URL (prod):** `https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api`
+**Swagger:** `/swagger`
+
+### Model: LoanApplication
 
 | Pole | Typ | Opis |
-|------|-----|------|
-| `id` | `int` | Unikalny identyfikator zadania (generowany przez bazę) |
-| `name` | `string` | Nazwa zadania (wymagana) |
-| `isCompleted` | `bool` | Status ukończenia zadania (domyślnie `false`) |
+|---|---|---|
+| `id` | `Guid` | Identyfikator wniosku |
+| `userId` | `Guid` | Identyfikator klienta |
+| `age` | `int` | Wiek (18–80) |
+| `maritalStatus` | `string` | `single` / `married` / `divorced` / `widowed` |
+| `dependents` | `int` | Liczba osób na utrzymaniu (0–10) |
+| `education` | `string` | `primary` / `vocational` / `secondary` / `higher` |
+| `employmentType` | `string` | `permanent` / `b2b` / `contract` / `pension` |
+| `employmentYears` | `int` | Lata stażu pracy |
+| `monthlyNetIncome` | `decimal` | Dochód netto / mies. (PLN) |
+| `monthlyObligations` | `decimal` | Suma rat zobowiązań / mies. (PLN) |
+| `livingCosts` | `decimal` | Koszty utrzymania / mies. (PLN) |
+| `loanAmount` | `decimal` | Kwota kredytu (PLN) |
+| `loanTermMonths` | `int` | Okres kredytu (6–360) |
+| `loanPurpose` | `string` | `consumer` / `mortgage` / `car` / `consolidation` |
+| `pastLoans` | `int` | Liczba poprzednich kredytów |
+| `latePayments` | `int` | Opóźnienia >30 dni w 24 mc |
+| `creditHistoryMonths` | `int` | Długość historii kredytowej (mies.) |
+| `status` | `string` | `pending` / `completed` / `manual_review` |
+| `createdAt` | `DateTime` | Data złożenia wniosku |
+| `decision` | `Decision` | Powiązana decyzja (po scoringu) |
 
-**Przykład obiektu:**
-```json
-{
-  "id": 1,
-  "name": "Uruchomić projekt w Dockerze",
-  "isCompleted": false
-}
-```
+### Model: Decision
 
----
+| Pole | Typ | Opis |
+|---|---|---|
+| `score` | `int` | Wynik scoringu (300–850) |
+| `decisionType` | `string` | `ACCEPT` / `MANUAL_REVIEW` / `REJECT` |
+| `dsti` | `decimal` | Debt Service to Income (%) |
+| `pti` | `decimal` | Payment to Income (%) |
+| `disposableIncome` | `decimal` | Dochód dyspozycyjny (PLN) |
+| `reasoning` | `string` | JSON array z uzasadnieniem |
+| `decidedAt` | `DateTime` | Data wydania decyzji |
 
-## Endpointy
+### Endpointy
 
-### 1. Pobierz wszystkie zadania
+#### POST `/api/loan-applications`
 
-```
-GET /api/tasks
-```
+Złożenie wniosku. Backend waliduje dane, woła scoring service, zapisuje wniosek wraz z decyzją.
 
-**Opis:** Zwraca listę wszystkich zadań z bazy danych.
-
-**Parametry:** brak
-
-**Odpowiedzi:**
-
-| Kod | Opis | Przykład |
-|-----|------|---------|
-| `200 OK` | Lista zadań | `[{ "id": 1, "name": "Zrobić kawę", "isCompleted": true }]` |
-
----
-
-### 2. Pobierz zadanie po ID
-
-```
-GET /api/tasks/{id}
-```
-
-**Opis:** Zwraca pojedyncze zadanie o podanym identyfikatorze.
-
-**Parametry:**
-
-| Nazwa | Typ | Miejsce | Opis |
-|-------|-----|---------|------|
-| `id` | `int` | ścieżka (path) | ID zadania do pobrania |
+**Request body:** zob. model `LoanApplication` (bez `id`, `status`, `createdAt`, `decision`).
 
 **Odpowiedzi:**
+| Kod | Opis |
+|---|---|
+| `201 Created` | Wniosek + decyzja zwrócone w body |
+| `400 Bad Request` | Walidacja nie powiodła się |
+| `502 Bad Gateway` | Scoring service nieosiągalny (decyzja fallback `MANUAL_REVIEW`) |
 
-| Kod | Opis | Przykład |
-|-----|------|---------|
-| `200 OK` | Znalezione zadanie | `{ "id": 1, "name": "Zrobić kawę", "isCompleted": true }` |
-| `404 Not Found` | Zadanie o podanym ID nie istnieje | `""` |
+#### GET `/api/loan-applications`
 
----
-
-### 3. Utwórz nowe zadanie
-
-```
-POST /api/tasks
-```
-
-**Opis:** Tworzy nowe zadanie i zapisuje je w bazie danych.
-
-**Nagłówki:**
-```
-Content-Type: application/json
-```
-
-**Body (wymagane):**
-```json
-{
-  "name": "Napisać dokumentację",
-  "isCompleted": false
-}
-```
-
-| Pole | Typ | Wymagane | Opis |
-|------|-----|----------|------|
-| `name` | `string` | tak | Nazwa zadania |
-| `isCompleted` | `bool` | nie | Status ukończenia (domyślnie `false`) |
-
-**Odpowiedzi:**
-
-| Kod | Opis | Przykład |
-|-----|------|---------|
-| `201 Created` | Zadanie zostało utworzone | `{ "id": 3, "name": "Napisać dokumentację", "isCompleted": false }` |
-| `400 Bad Request` | Nieprawidłowe dane wejściowe | `""` |
-
----
-
-### 4. Zaktualizuj zadanie
-
-```
-PUT /api/tasks/{id}
-```
-
-**Opis:** Aktualizuje istniejące zadanie (nazwę i/lub status).
-
-**Parametry:**
-
-| Nazwa | Typ | Miejsce | Opis |
-|-------|-----|---------|------|
-| `id` | `int` | ścieżka (path) | ID zadania do zaktualizowania |
-
-**Nagłówki:**
-```
-Content-Type: application/json
-```
-
-**Body (wymagane):**
-```json
-{
-  "name": "Napisać dokumentację (zaktualizowana)",
-  "isCompleted": true
-}
-```
-
-**Odpowiedzi:**
+Lista wszystkich wniosków klienta.
 
 | Kod | Opis |
-|-----|------|
-| `204 No Content` | Zadanie zostało zaktualizowane |
-| `404 Not Found` | Zadanie o podanym ID nie istnieje |
-| `400 Bad Request` | Nieprawidłowe dane wejściowe |
+|---|---|
+| `200 OK` | Tablica wniosków |
 
----
+#### GET `/api/loan-applications/{id}`
 
-### 5. Usuń zadanie
-
-```
-DELETE /api/tasks/{id}
-```
-
-**Opis:** Trwale usuwa zadanie z bazy danych.
-
-**Parametry:**
-
-| Nazwa | Typ | Miejsce | Opis |
-|-------|-----|---------|------|
-| `id` | `int` | ścieżka (path) | ID zadania do usunięcia |
-
-**Odpowiedzi:**
+Szczegóły pojedynczego wniosku wraz z decyzją.
 
 | Kod | Opis |
-|-----|------|
-| `204 No Content` | Zadanie zostało usunięte |
-| `404 Not Found` | Zadanie o podanym ID nie istnieje |
+|---|---|
+| `200 OK` | Wniosek z decyzją |
+| `404 Not Found` | Wniosek nie istnieje |
 
 ---
 
-## Przykładowe użycie (curl)
+## 2. Scoring Service (Node.js)
+
+**Base URL (prod):** `https://cloud-task-manager-scoring-pk.azurewebsites.net`
+
+### POST `/api/score`
+
+Czysta funkcja: walidacja Joi → kalkulacja DStI / PTI / dochodu dyspozycyjnego → scorecard 300–850 → decyzja.
+
+**Request body** (wszystkie pola wymagane):
+
+```json
+{
+  "age": 35,
+  "maritalStatus": "married",
+  "dependents": 2,
+  "education": "higher",
+  "employmentType": "permanent",
+  "employmentYears": 8,
+  "monthlyNetIncome": 12000,
+  "monthlyObligations": 800,
+  "livingCosts": 4000,
+  "loanAmount": 50000,
+  "loanTermMonths": 36,
+  "loanPurpose": "consumer",
+  "pastLoans": 2,
+  "latePayments": 0,
+  "creditHistoryMonths": 60
+}
+```
+
+**Response 200:**
+
+```json
+{
+  "score": 742,
+  "decision": "ACCEPT",
+  "indicators": {
+    "dsti": 22.5,
+    "pti": 13.4,
+    "disposableIncome": 7200,
+    "monthlyInstallment": 1607.50
+  },
+  "reasoning": [
+    "Stabilne zatrudnienie (UoP, 8 lat stażu)",
+    "Niski wskaźnik DStI (22,5%)",
+    "Brak opóźnień w spłatach"
+  ],
+  "calculatedAt": "2026-05-07T10:30:00Z",
+  "version": "1.0.0"
+}
+```
+
+**Reguły decyzyjne** (zgodne z Rekomendacją S KNF, uchwała 242/2023):
+
+| Score | Decyzja | Warunek |
+|---|---|---|
+| 750–850 | `ACCEPT` | DStI ≤ 40% |
+| 600–749 | `MANUAL_REVIEW` | — |
+| 300–599 | `REJECT` | — |
+
+Override: gdy `DStI > 50%`, decyzja zawsze `MANUAL_REVIEW`.
+
+| Kod | Opis |
+|---|---|
+| `200 OK` | Score + decyzja |
+| `400 Bad Request` | Walidacja Joi nie powiodła się |
+
+### GET `/api/health`
+
+```json
+{ "status": "ok", "version": "1.0.0", "uptime": 12345 }
+```
+
+---
+
+## Przykłady użycia (curl)
 
 ```bash
-# Pobierz wszystkie zadania
-curl -X GET https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api/tasks
-
-# Utwórz nowe zadanie
-curl -X POST https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api/tasks \
+# Scoring (bezpośrednio do mikrousługi)
+curl -X POST https://cloud-task-manager-scoring-pk.azurewebsites.net/api/score \
   -H "Content-Type: application/json" \
-  -d '{"name": "Nowe zadanie", "isCompleted": false}'
+  -d @scoring-service/src/__tests__/sample-request.json
 
-# Usuń zadanie o ID 1
-curl -X DELETE https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api/tasks/1
+# Złożenie wniosku przez backend
+curl -X POST https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api/loan-applications \
+  -H "Content-Type: application/json" \
+  -d '{ "age": 35, "monthlyNetIncome": 12000, ... }'
 ```
 
----
-
-## Interaktywna dokumentacja (Swagger UI)
-
-Projekt zawiera automatycznie generowaną dokumentację Swagger dostępną pod adresem:
-
-```
-https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/swagger
-```
-
-Swagger UI pozwala na przeglądanie i testowanie wszystkich endpointów bezpośrednio w przeglądarce bez potrzeby użycia dodatkowych narzędzi.
+Interaktywna dokumentacja Swagger: `/swagger` na backendzie.

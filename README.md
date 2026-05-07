@@ -107,16 +107,4 @@ dotnet test tests/CloudBackend.Tests/CloudBackend.Tests.csproj
 
 Sekrety w Key Vault: `DbConnectionString`, `ScoringServiceUrl`.
 
-## Status (Artefakty kierunkowe)
-
-- [x] Artefakt 1 — Diagram C4 i struktura folderów (`docs/`)
-- [x] Artefakt 2 — Środowisko wielokontenerowe (Docker Compose)
-- [x] Artefakt 3 — Warstwa prezentacji (React)
-- [x] Artefakt 4 — Warstwa logiki backendu (.NET)
-- [x] Artefakt 5 — DTO, named volumes, migracje EF Core, formularz React
-- [x] Artefakt 6 — Hosting Azure (App Service, SQL Database)
-- [x] Artefakt 7 — Azure Key Vault + Managed Identity
-- [x] Artefakt 8 — CI/CD (GitHub Actions)
-- [x] Konwersja na model kredytowy + mikrousługa scoringowa Node.js
-
 Plan dalszych prac, model scoringowy i hipotezy badawcze: [`CLAUDE.md`](CLAUDE.md).
