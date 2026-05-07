@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CloudBackend.Data;
 using CloudBackend.Models;
 using CloudBackend.DTOs;
-using System.Text.Json;
+using CloudBackend.Services;
 
 namespace CloudBackend.Controllers;
 
@@ -12,17 +12,12 @@ namespace CloudBackend.Controllers;
 public class LoanApplicationController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IConfiguration _configuration;
+    private readonly IScoringServiceClient _scoring;
 
-    public LoanApplicationController(
-        AppDbContext context,
-        IHttpClientFactory httpClientFactory,
-        IConfiguration configuration)
+    public LoanApplicationController(AppDbContext context, IScoringServiceClient scoring)
     {
         _context = context;
-        _httpClientFactory = httpClientFactory;
-        _configuration = configuration;
+        _scoring = scoring;
     }
 
     [HttpGet]
@@ -72,8 +67,18 @@ public class LoanApplicationController : ControllerBase
         _context.LoanApplications.Add(application);
         await _context.SaveChangesAsync();
 
-        // Call scoring microservice
-        var decision = await CallScoringService(application);
+        var result = await _scoring.ScoreAsync(application);
+        var decision = result != null
+            ? new CreditDecision
+            {
+                Score = result.Score,
+                DstI = result.DstI,
+                MonthlyInstalment = result.MonthlyInstalment,
+                Outcome = result.Outcome,
+                Reason = result.Reason
+            }
+            : FallbackScoring(application);
+
         decision.LoanApplicationId = application.Id;
         _context.CreditDecisions.Add(decision);
         await _context.SaveChangesAsync();
@@ -81,63 +86,6 @@ public class LoanApplicationController : ControllerBase
         application.Decision = decision;
 
         return CreatedAtAction(nameof(GetById), new { id = application.Id }, MapToDto(application));
-    }
-
-    private async Task<CreditDecision> CallScoringService(LoanApplication app)
-    {
-        try
-        {
-            var scoringUrl = _configuration["ScoringServiceUrl"] ?? "http://localhost:3001";
-            var client = _httpClientFactory.CreateClient();
-
-            var payload = new
-            {
-                age = app.Age,
-                educationLevel = app.EducationLevel,
-                maritalStatus = app.MaritalStatus,
-                dependents = app.Dependents,
-                employmentType = app.EmploymentType,
-                employmentYears = app.EmploymentYears,
-                monthlyIncome = app.MonthlyIncome,
-                existingMonthlyDebt = app.ExistingMonthlyDebt,
-                loanAmount = app.LoanAmount,
-                loanTermMonths = app.LoanTermMonths,
-                loanPurpose = app.LoanPurpose,
-                propertyValue = app.PropertyValue,
-                hasCreditHistory = app.HasCreditHistory,
-                pastDelays = app.PastDelays
-            };
-
-            var response = await client.PostAsJsonAsync($"{scoringUrl}/api/score", payload);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<ScoringResult>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                if (result != null)
-                {
-                    return new CreditDecision
-                    {
-                        Score = result.Score,
-                        DstI = result.DstI,
-                        MonthlyInstalment = result.MonthlyInstalment,
-                        Outcome = result.Outcome,
-                        Reason = result.Reason
-                    };
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Scoring service error: {ex.Message}");
-        }
-
-        // Fallback: basic local calculation if scoring service unavailable
-        return FallbackScoring(app);
     }
 
     private static CreditDecision FallbackScoring(LoanApplication app)
@@ -210,12 +158,4 @@ public class LoanApplicationController : ControllerBase
         }
     };
 
-    private class ScoringResult
-    {
-        public int Score { get; set; }
-        public decimal DstI { get; set; }
-        public decimal MonthlyInstalment { get; set; }
-        public string Outcome { get; set; } = string.Empty;
-        public string Reason { get; set; } = string.Empty;
-    }
 }

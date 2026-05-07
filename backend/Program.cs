@@ -1,5 +1,6 @@
 using Azure.Identity;
 using CloudBackend.Data;
+using CloudBackend.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IScoringServiceClient, ScoringServiceClient>();
 
 var connectionString =
     builder.Configuration["DbConnectionString"]
