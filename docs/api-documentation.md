@@ -19,63 +19,122 @@ System składa się z dwóch publicznych API:
 
 | Pole | Typ | Opis |
 |---|---|---|
-| `id` | `Guid` | Identyfikator wniosku |
-| `userId` | `Guid` | Identyfikator klienta |
+| `id` | `int` | Identyfikator wniosku |
+| `createdAt` | `DateTime` | Data złożenia wniosku |
 | `age` | `int` | Wiek (18–80) |
+| `educationLevel` | `string` | `basic` / `vocational` / `secondary` / `higher` |
 | `maritalStatus` | `string` | `single` / `married` / `divorced` / `widowed` |
 | `dependents` | `int` | Liczba osób na utrzymaniu (0–10) |
-| `education` | `string` | `primary` / `vocational` / `secondary` / `higher` |
-| `employmentType` | `string` | `permanent` / `b2b` / `contract` / `pension` |
-| `employmentYears` | `int` | Lata stażu pracy |
-| `monthlyNetIncome` | `decimal` | Dochód netto / mies. (PLN) |
-| `monthlyObligations` | `decimal` | Suma rat zobowiązań / mies. (PLN) |
+| `employmentType` | `string` | `permanent` / `b2b` / `contract` / `pension` / `unemployed` |
+| `employmentYears` | `int` | Lata stażu pracy (0–50) |
+| `monthlyIncome` | `decimal` | Dochód netto / mies. (PLN) |
+| `existingMonthlyDebt` | `decimal` | Suma rat zobowiązań / mies. (PLN) |
 | `livingCosts` | `decimal` | Koszty utrzymania / mies. (PLN) |
-| `loanAmount` | `decimal` | Kwota kredytu (PLN) |
-| `loanTermMonths` | `int` | Okres kredytu (6–360) |
-| `loanPurpose` | `string` | `consumer` / `mortgage` / `car` / `consolidation` |
+| `loanAmount` | `decimal` | Kwota kredytu (PLN, min 1000) |
+| `loanTermMonths` | `int` | Okres kredytu (3–360 mies.) |
+| `loanPurpose` | `string` | `housing` / `car` / `consumer` / `consolidation` / `other` |
+| `propertyValue` | `decimal` | Wartość nieruchomości (PLN, 0 jeśli n/d) |
 | `pastLoans` | `int` | Liczba poprzednich kredytów |
-| `latePayments` | `int` | Opóźnienia >30 dni w 24 mc |
+| `latePayments` | `int` | Opóźnienia >30 dni w ostatnich 24 miesiącach |
 | `creditHistoryMonths` | `int` | Długość historii kredytowej (mies.) |
-| `status` | `string` | `pending` / `completed` / `manual_review` |
-| `createdAt` | `DateTime` | Data złożenia wniosku |
-| `decision` | `Decision` | Powiązana decyzja (po scoringu) |
+| `decision` | `CreditDecision` | Powiązana decyzja (po scoringu) |
 
-### Model: Decision
+### Model: CreditDecision
 
 | Pole | Typ | Opis |
 |---|---|---|
 | `score` | `int` | Wynik scoringu (300–850) |
-| `decisionType` | `string` | `ACCEPT` / `MANUAL_REVIEW` / `REJECT` |
-| `dsti` | `decimal` | Debt Service to Income (%) |
-| `pti` | `decimal` | Payment to Income (%) |
+| `outcome` | `string` | `approve` / `manual` / `reject` |
+| `dstI` | `decimal` | Debt Service to Income (wartość 0–1) |
+| `pti` | `decimal` | Payment to Income — wskaźnik pomocniczy (wartość 0–1) |
 | `disposableIncome` | `decimal` | Dochód dyspozycyjny (PLN) |
-| `reasoning` | `string` | JSON array z uzasadnieniem |
+| `monthlyInstalment` | `decimal` | Rata miesięczna (PLN) |
+| `reason` | `string` | Uzasadnienie decyzji |
 | `decidedAt` | `DateTime` | Data wydania decyzji |
 
 ### Endpointy
 
-#### POST `/api/loan-applications`
+#### POST `/api/loanapplication`
 
 Złożenie wniosku. Backend waliduje dane, woła scoring service, zapisuje wniosek wraz z decyzją.
+Jeśli scoring service jest niedostępny — stosowany jest fallback z uproszczoną logiką.
 
-**Request body:** zob. model `LoanApplication` (bez `id`, `status`, `createdAt`, `decision`).
+**Request body:** zob. model `LoanApplication` (bez `id`, `createdAt`, `decision`).
 
 **Odpowiedzi:**
+
 | Kod | Opis |
 |---|---|
 | `201 Created` | Wniosek + decyzja zwrócone w body |
 | `400 Bad Request` | Walidacja nie powiodła się |
-| `502 Bad Gateway` | Scoring service nieosiągalny (decyzja fallback `MANUAL_REVIEW`) |
 
-#### GET `/api/loan-applications`
+**Przykład request:**
 
-Lista wszystkich wniosków klienta.
+```json
+{
+  "age": 35,
+  "educationLevel": "higher",
+  "maritalStatus": "married",
+  "dependents": 1,
+  "employmentType": "permanent",
+  "employmentYears": 8,
+  "monthlyIncome": 12000,
+  "existingMonthlyDebt": 500,
+  "livingCosts": 3500,
+  "loanAmount": 50000,
+  "loanTermMonths": 36,
+  "loanPurpose": "consumer",
+  "propertyValue": 0,
+  "pastLoans": 2,
+  "latePayments": 0,
+  "creditHistoryMonths": 84
+}
+```
+
+**Przykład response 201:**
+
+```json
+{
+  "id": 42,
+  "createdAt": "2026-05-09T10:00:00Z",
+  "age": 35,
+  "educationLevel": "higher",
+  "maritalStatus": "married",
+  "dependents": 1,
+  "employmentType": "permanent",
+  "employmentYears": 8,
+  "monthlyIncome": 12000.00,
+  "existingMonthlyDebt": 500.00,
+  "livingCosts": 3500.00,
+  "loanAmount": 50000.00,
+  "loanTermMonths": 36,
+  "loanPurpose": "consumer",
+  "propertyValue": 0.00,
+  "pastLoans": 2,
+  "latePayments": 0,
+  "creditHistoryMonths": 84,
+  "decision": {
+    "score": 742,
+    "outcome": "approve",
+    "dstI": 0.1285,
+    "pti": 0.0824,
+    "disposableIncome": 6511.92,
+    "monthlyInstalment": 989.12,
+    "reason": "Scoring powyżej 700 pkt – automatyczna akceptacja.",
+    "decidedAt": "2026-05-09T10:00:00Z"
+  }
+}
+```
+
+#### GET `/api/loanapplication`
+
+Lista wszystkich wniosków, posortowana od najnowszych.
 
 | Kod | Opis |
 |---|---|
-| `200 OK` | Tablica wniosków |
+| `200 OK` | Tablica wniosków z decyzjami |
 
-#### GET `/api/loan-applications/{id}`
+#### GET `/api/loanapplication/{id}`
 
 Szczegóły pojedynczego wniosku wraz z decyzją.
 
@@ -94,59 +153,55 @@ Szczegóły pojedynczego wniosku wraz z decyzją.
 
 Czysta funkcja: walidacja Joi → kalkulacja DStI / PTI / dochodu dyspozycyjnego → scorecard 300–850 → decyzja.
 
-**Request body** (wszystkie pola wymagane):
+**Request body:**
 
 ```json
 {
   "age": 35,
+  "educationLevel": "higher",
   "maritalStatus": "married",
-  "dependents": 2,
-  "education": "higher",
+  "dependents": 1,
   "employmentType": "permanent",
   "employmentYears": 8,
-  "monthlyNetIncome": 12000,
-  "monthlyObligations": 800,
-  "livingCosts": 4000,
+  "monthlyIncome": 12000,
+  "existingMonthlyDebt": 500,
+  "livingCosts": 3500,
   "loanAmount": 50000,
   "loanTermMonths": 36,
   "loanPurpose": "consumer",
+  "propertyValue": 0,
   "pastLoans": 2,
   "latePayments": 0,
-  "creditHistoryMonths": 60
+  "creditHistoryMonths": 84
 }
 ```
+
+Pola opcjonalne (z wartością domyślną 0): `livingCosts`, `propertyValue`, `pastLoans`, `latePayments`, `creditHistoryMonths`.
 
 **Response 200:**
 
 ```json
 {
   "score": 742,
-  "decision": "ACCEPT",
-  "indicators": {
-    "dsti": 22.5,
-    "pti": 13.4,
-    "disposableIncome": 7200,
-    "monthlyInstallment": 1607.50
-  },
-  "reasoning": [
-    "Stabilne zatrudnienie (UoP, 8 lat stażu)",
-    "Niski wskaźnik DStI (22,5%)",
-    "Brak opóźnień w spłatach"
-  ],
-  "calculatedAt": "2026-05-07T10:30:00Z",
-  "version": "1.0.0"
+  "dstI": 0.1285,
+  "pti": 0.0824,
+  "ltV": null,
+  "disposableIncome": 6511.92,
+  "monthlyInstalment": 989.12,
+  "outcome": "approve",
+  "reason": "Scoring powyżej 700 pkt – automatyczna akceptacja."
 }
 ```
 
 **Reguły decyzyjne** (zgodne z Rekomendacją S KNF, uchwała 242/2023):
 
-| Score | Decyzja | Warunek |
+| Warunek | Decyzja | Priorytet |
 |---|---|---|
-| 750–850 | `ACCEPT` | DStI ≤ 40% |
-| 600–749 | `MANUAL_REVIEW` | — |
-| 300–599 | `REJECT` | — |
-
-Override: gdy `DStI > 50%`, decyzja zawsze `MANUAL_REVIEW`.
+| Dochód dyspozycyjny ≤ 0 | `manual` | 1 (nadrzędny) |
+| DStI > 50% | `manual` | 2 (override KNF) |
+| Score ≥ 700 | `approve` | 3 |
+| Score 550–699 | `manual` | 4 |
+| Score < 550 | `reject` | 5 |
 
 | Kod | Opis |
 |---|---|
@@ -161,18 +216,29 @@ Override: gdy `DStI > 50%`, decyzja zawsze `MANUAL_REVIEW`.
 
 ---
 
+## Wskaźniki finansowe
+
+| Wskaźnik | Wzór | Próg / Interpretacja |
+|---|---|---|
+| **DStI** | (zobowiązania + rata) / dochód netto | < 40% bezpieczne, > 50% override → manual |
+| **PTI** | rata / dochód netto | wskaźnik pomocniczy (Matuszyk 2018, s. 88) |
+| **LtV** | kwota / wartość nieruchomości | tylko kredyty hipoteczne |
+| **Dochód dyspozycyjny** | dochód − zobowiązania − koszty utrzymania − rata | musi być > 0 (Rekomendacja S KNF) |
+
+---
+
 ## Przykłady użycia (curl)
 
 ```bash
-# Scoring (bezpośrednio do mikrousługi)
+# Scoring bezpośrednio do mikrousługi
 curl -X POST https://cloud-task-manager-scoring-pk.azurewebsites.net/api/score \
   -H "Content-Type: application/json" \
-  -d @scoring-service/src/__tests__/sample-request.json
+  -d '{"age":35,"educationLevel":"higher","maritalStatus":"married","dependents":1,"employmentType":"permanent","employmentYears":8,"monthlyIncome":12000,"existingMonthlyDebt":500,"livingCosts":3500,"loanAmount":50000,"loanTermMonths":36,"loanPurpose":"consumer","propertyValue":0,"pastLoans":2,"latePayments":0,"creditHistoryMonths":84}'
 
 # Złożenie wniosku przez backend
-curl -X POST https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api/loan-applications \
+curl -X POST https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentral-01.azurewebsites.net/api/loanapplication \
   -H "Content-Type: application/json" \
-  -d '{ "age": 35, "monthlyNetIncome": 12000, ... }'
+  -d '{"age":35,"educationLevel":"higher","maritalStatus":"married","dependents":1,"employmentType":"permanent","employmentYears":8,"monthlyIncome":12000,"existingMonthlyDebt":500,"livingCosts":3500,"loanAmount":50000,"loanTermMonths":36,"loanPurpose":"consumer","propertyValue":0,"pastLoans":2,"latePayments":0,"creditHistoryMonths":84}'
 ```
 
 Interaktywna dokumentacja Swagger: `/swagger` na backendzie.

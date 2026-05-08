@@ -13,18 +13,22 @@ export interface LoanApplicationCreateDto {
   employmentYears: number;
   monthlyIncome: number;
   existingMonthlyDebt: number;
+  livingCosts: number;
   loanAmount: number;
   loanTermMonths: number;
   loanPurpose: string;
   propertyValue: number;
-  hasCreditHistory: boolean;
-  pastDelays: number;
+  pastLoans: number;
+  latePayments: number;
+  creditHistoryMonths: number;
 }
 
 export interface CreditDecisionDto {
   score: number;
   dstI: number;
+  pti: number;
   monthlyInstalment: number;
+  disposableIncome: number;
   outcome: 'approve' | 'manual' | 'reject';
   reason: string;
   decidedAt: string;
@@ -41,12 +45,14 @@ export interface LoanApplicationReadDto {
   employmentYears: number;
   monthlyIncome: number;
   existingMonthlyDebt: number;
+  livingCosts: number;
   loanAmount: number;
   loanTermMonths: number;
   loanPurpose: string;
   propertyValue: number;
-  hasCreditHistory: boolean;
-  pastDelays: number;
+  pastLoans: number;
+  latePayments: number;
+  creditHistoryMonths: number;
   decision: CreditDecisionDto | null;
 }
 

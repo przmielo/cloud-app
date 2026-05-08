@@ -12,12 +12,14 @@ const validPayload = {
   employmentYears: 8,
   monthlyIncome: 12000,
   existingMonthlyDebt: 800,
+  livingCosts: 3000,
   loanAmount: 50000,
   loanTermMonths: 36,
   loanPurpose: 'consumer',
   propertyValue: 0,
-  hasCreditHistory: true,
-  pastDelays: 0,
+  pastLoans: 2,
+  latePayments: 0,
+  creditHistoryMonths: 84,
 };
 
 describe('GET /api/health', () => {
@@ -31,13 +33,15 @@ describe('GET /api/health', () => {
 });
 
 describe('POST /api/score', () => {
-  it('returns 200 with score and decision for valid payload', async () => {
+  it('returns 200 with score, decision and all indicators for valid payload', async () => {
     const res = await request(app).post('/api/score').send(validPayload);
     expect(res.status).toBe(200);
     expect(res.body.score).toBeGreaterThanOrEqual(300);
     expect(res.body.score).toBeLessThanOrEqual(850);
     expect(['approve', 'manual', 'reject']).toContain(res.body.outcome);
     expect(res.body.dstI).toBeGreaterThan(0);
+    expect(res.body.pti).toBeGreaterThan(0);
+    expect(typeof res.body.disposableIncome).toBe('number');
     expect(res.body.monthlyInstalment).toBeGreaterThan(0);
   });
 
@@ -67,6 +71,7 @@ describe('POST /api/score', () => {
       ...validPayload,
       monthlyIncome: 3000,
       existingMonthlyDebt: 2000,
+      livingCosts: 0,
       loanAmount: 100000,
       loanTermMonths: 12,
     };
@@ -76,13 +81,60 @@ describe('POST /api/score', () => {
     expect(res.body.dstI).toBeGreaterThan(0.5);
   });
 
+  it('forces manual review when disposable income <= 0 (KNF Rekomendacja S)', async () => {
+    const negativeDisposablePayload = {
+      ...validPayload,
+      monthlyIncome: 3000,
+      existingMonthlyDebt: 500,
+      livingCosts: 2800,
+      loanAmount: 50000,
+      loanTermMonths: 60,
+    };
+    const res = await request(app).post('/api/score').send(negativeDisposablePayload);
+    expect(res.status).toBe(200);
+    expect(res.body.outcome).toBe('manual');
+    expect(res.body.disposableIncome).toBeLessThanOrEqual(0);
+  });
+
+  it('accepts payload with widowed marital status and pension employment', async () => {
+    const widowedPensionPayload = {
+      ...validPayload,
+      maritalStatus: 'widowed',
+      employmentType: 'pension',
+      employmentYears: 0,
+    };
+    const res = await request(app).post('/api/score').send(widowedPensionPayload);
+    expect(res.status).toBe(200);
+    expect(res.body.score).toBeGreaterThanOrEqual(300);
+  });
+
+  it('accepts payload with b2b employment and vocational education', async () => {
+    const b2bPayload = {
+      ...validPayload,
+      employmentType: 'b2b',
+      educationLevel: 'vocational',
+    };
+    const res = await request(app).post('/api/score').send(b2bPayload);
+    expect(res.status).toBe(200);
+    expect(res.body.score).toBeGreaterThanOrEqual(300);
+  });
+
+  it('accepts payload with consolidation loan purpose', async () => {
+    const consolidationPayload = {
+      ...validPayload,
+      loanPurpose: 'consolidation',
+    };
+    const res = await request(app).post('/api/score').send(consolidationPayload);
+    expect(res.status).toBe(200);
+  });
+
   it('rejects unemployed applicant with low score', async () => {
     const rejectedPayload = {
       ...validPayload,
       employmentType: 'unemployed',
       employmentYears: 0,
-      hasCreditHistory: true,
-      pastDelays: 5,
+      latePayments: 5,
+      creditHistoryMonths: 0,
       monthlyIncome: 1500,
     };
     const res = await request(app).post('/api/score').send(rejectedPayload);

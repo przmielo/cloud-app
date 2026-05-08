@@ -1,0 +1,22 @@
+name: Model Evaluation (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run model evaluation
+        run: node tests/model-evaluation/evaluate-model.js
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-evaluation-results-${{ github.run_number }}
+          path: tests/model-evaluation/results/

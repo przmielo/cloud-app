@@ -54,12 +54,25 @@ export default function ResultPage() {
 
           <Metric label="DStI (Debt Service to Income)" value={`${(d.dstI * 100).toFixed(1)}%`}
             note="Próg KNF: 50%. Źródło: Rekomendacja S KNF (uchwała nr 242/2023)" />
+          <Metric label="PTI (Payment to Income)" value={`${(d.pti * 100).toFixed(1)}%`}
+            note="Wskaźnik pomocniczy — relacja raty do dochodu netto. Źródło: Matuszyk 2018, s. 88" />
+          <Metric label="Dochód dyspozycyjny" value={`${d.disposableIncome.toFixed(2)} PLN`}
+            note="Dochód netto po odjęciu zobowiązań, kosztów utrzymania i raty. Zgodnie z Rekomendacją S KNF musi być > 0." />
           <Metric label="Szacowana miesięczna rata" value={`${d.monthlyInstalment.toFixed(2)} PLN`}
             note="Wyliczona przy stopie rocznej 7%" />
 
           <div style={styles.reasonBox}>
             <strong>Uzasadnienie decyzji:</strong>
             <p style={{ margin: '6px 0 0' }}>{d.reason}</p>
+          </div>
+
+          <div style={styles.knfBox}>
+            <strong style={{ fontSize: '0.85rem', color: '#1d4ed8' }}>Zgodność z Rekomendacją S KNF</strong>
+            <p style={{ fontSize: '0.8rem', color: '#374151', margin: '6px 0 0' }}>
+              Decyzja została podjęta zgodnie z Rekomendacją S KNF (uchwała nr 242/2023):
+              wskaźnik DStI &gt; 50% powoduje skierowanie do analizy manualnej, niezależnie od wyniku scoringu.
+              Ujemny dochód dyspozycyjny również powoduje analizę manualną.
+            </p>
           </div>
         </div>
       )}
@@ -100,6 +113,7 @@ const styles: Record<string, React.CSSProperties> = {
   scoreBarFill: { height: '100%', borderRadius: '5px', transition: 'width 0.5s' },
   scoreScale: { display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#9ca3af', marginBottom: '20px' },
   reasonBox: { background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '14px', marginTop: '16px' },
+  knfBox: { background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '14px', marginTop: '12px' },
   actions: { display: 'flex', gap: '12px', justifyContent: 'center' },
   btnPrimary: { background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 28px', fontSize: '1rem', cursor: 'pointer' },
   btnSecondary: { background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '8px', padding: '10px 28px', fontSize: '1rem', cursor: 'pointer' },

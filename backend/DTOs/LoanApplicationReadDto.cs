@@ -15,14 +15,16 @@ namespace CloudBackend.DTOs
         public decimal MonthlyIncome { get; set; }
 
         public decimal ExistingMonthlyDebt { get; set; }
+        public decimal LivingCosts { get; set; }
 
         public decimal LoanAmount { get; set; }
         public int LoanTermMonths { get; set; }
         public string LoanPurpose { get; set; } = string.Empty;
         public decimal PropertyValue { get; set; }
 
-        public bool HasCreditHistory { get; set; }
-        public int PastDelays { get; set; }
+        public int PastLoans { get; set; }
+        public int LatePayments { get; set; }
+        public int CreditHistoryMonths { get; set; }
 
         public CreditDecisionDto? Decision { get; set; }
     }
@@ -31,7 +33,9 @@ namespace CloudBackend.DTOs
     {
         public int Score { get; set; }
         public decimal DstI { get; set; }
+        public decimal Pti { get; set; }
         public decimal MonthlyInstalment { get; set; }
+        public decimal DisposableIncome { get; set; }
         public string Outcome { get; set; } = string.Empty;
         public string Reason { get; set; } = string.Empty;
         public DateTime DecidedAt { get; set; }

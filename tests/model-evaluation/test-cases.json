@@ -1,0 +1,327 @@
+[
+  {
+    "id": "TC-001",
+    "description": "Idealny kandydat: UoP 10 lat, wysokie dochody, długa historia, brak opóźnień",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Stabilne zatrudnienie UoP >5 lat (max pkt), niski DStI ~10%, długa historia 10 lat (80 pkt). Zgodnie z Matuszyk 2018, s. 95-99 — profile o niskim DStI i stabilnym zatrudnieniu powinny uzyskiwać wyniki >= 700 pkt.",
+    "input": {
+      "age": 35, "educationLevel": "higher", "maritalStatus": "married", "dependents": 1,
+      "employmentType": "permanent", "employmentYears": 10, "monthlyIncome": 12000,
+      "existingMonthlyDebt": 500, "livingCosts": 3500, "loanAmount": 50000, "loanTermMonths": 36,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 0, "creditHistoryMonths": 120
+    }
+  },
+  {
+    "id": "TC-002",
+    "description": "Stabilny B2B 7 lat, wyższe wykształcenie, długa historia, niski DStI",
+    "expectedOutcome": "approve",
+    "expectedRationale": "B2B z dużym stażem (50 pkt zamiast 60 dla UoP) rekompensuje wykształcenie wyższe i historia 96 mc. DStI ~15%. Matuszyk 2018, s. 99 — B2B traktowane jako stabilne po 5+ latach.",
+    "input": {
+      "age": 42, "educationLevel": "higher", "maritalStatus": "married", "dependents": 0,
+      "employmentType": "b2b", "employmentYears": 7, "monthlyIncome": 15000,
+      "existingMonthlyDebt": 800, "livingCosts": 4000, "loanAmount": 80000, "loanTermMonths": 60,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 3, "latePayments": 0, "creditHistoryMonths": 96
+    }
+  },
+  {
+    "id": "TC-003",
+    "description": "Emeryt z niską ratą, brak zobowiązań, długa historia kredytowa",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Emerytura jako źródło dochodu (20 pkt, Matuszyk 2018 s. 99), ale bardzo niski DStI ~12%, długa historia 180 mc i brak opóźnień. Dochód dyspozycyjny wysoki.",
+    "input": {
+      "age": 65, "educationLevel": "vocational", "maritalStatus": "widowed", "dependents": 0,
+      "employmentType": "pension", "employmentYears": 0, "monthlyIncome": 5500,
+      "existingMonthlyDebt": 0, "livingCosts": 2000, "loanAmount": 15000, "loanTermMonths": 24,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 5, "latePayments": 0, "creditHistoryMonths": 180
+    }
+  },
+  {
+    "id": "TC-004",
+    "description": "Młody specjalista 30 lat, UoP 5 lat, niski DStI, dobre wykształcenie",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Wiek 30 lat (35 pkt), UoP 5 lat (50 pkt), wyższe (40 pkt), DStI ~20% (100 pkt). Profil odpowiada 'klientowi wiarygodnemu' wg Matuszyk 2018, s. 94-95.",
+    "input": {
+      "age": 30, "educationLevel": "higher", "maritalStatus": "single", "dependents": 0,
+      "employmentType": "permanent", "employmentYears": 5, "monthlyIncome": 8000,
+      "existingMonthlyDebt": 300, "livingCosts": 2500, "loanAmount": 40000, "loanTermMonths": 48,
+      "loanPurpose": "car", "propertyValue": 0,
+      "pastLoans": 1, "latePayments": 0, "creditHistoryMonths": 60
+    }
+  },
+  {
+    "id": "TC-005",
+    "description": "Rodzina z 2 dziećmi, kredyt hipoteczny LtV 70%, niski DStI",
+    "expectedOutcome": "approve",
+    "expectedRationale": "LtV 70% bezpieczne wg Rekomendacji S KNF (uchwała 242/2023). DStI ~28%, małżeństwo (20 pkt), UoP 8 lat. Matuszyk 2018, s. 101 — cel 'housing' premiowany (+30 pkt).",
+    "input": {
+      "age": 38, "educationLevel": "higher", "maritalStatus": "married", "dependents": 2,
+      "employmentType": "permanent", "employmentYears": 8, "monthlyIncome": 14000,
+      "existingMonthlyDebt": 600, "livingCosts": 4500, "loanAmount": 280000, "loanTermMonths": 240,
+      "loanPurpose": "housing", "propertyValue": 400000,
+      "pastLoans": 1, "latePayments": 0, "creditHistoryMonths": 96
+    }
+  },
+  {
+    "id": "TC-006",
+    "description": "Dobry profil, kredyt na auto, UoP 6 lat",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Typowy profil 'approve': UoP >5 lat, dochód 9000, DStI ~18%, historia 48 mc bez opóźnień. Cel 'car' daje 20 pkt. Matuszyk 2018, s. 95.",
+    "input": {
+      "age": 40, "educationLevel": "secondary", "maritalStatus": "married", "dependents": 1,
+      "employmentType": "permanent", "employmentYears": 6, "monthlyIncome": 9000,
+      "existingMonthlyDebt": 400, "livingCosts": 3000, "loanAmount": 45000, "loanTermMonths": 60,
+      "loanPurpose": "car", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 0, "creditHistoryMonths": 48
+    }
+  },
+  {
+    "id": "TC-007",
+    "description": "Konsolidacja małej kwoty, wysoki dochód, brak opóźnień",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Konsolidacja to cel 'porządkujący' zobowiązania (Matuszyk 2018, s. 101). DStI po konsolidacji spada. Wysoki dochód 11000, UoP 7 lat, historia 72 mc.",
+    "input": {
+      "age": 44, "educationLevel": "higher", "maritalStatus": "married", "dependents": 0,
+      "employmentType": "permanent", "employmentYears": 7, "monthlyIncome": 11000,
+      "existingMonthlyDebt": 1200, "livingCosts": 3000, "loanAmount": 30000, "loanTermMonths": 36,
+      "loanPurpose": "consolidation", "propertyValue": 0,
+      "pastLoans": 4, "latePayments": 0, "creditHistoryMonths": 72
+    }
+  },
+  {
+    "id": "TC-008",
+    "description": "Średni wiek, UoP 9 lat, dobre wskaźniki finansowe",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Wiek 45 lat (50 pkt sweet spot), UoP 9 lat (50 pkt), DStI 22%, historia 60 mc. Scoring powinien przekraczać 700 pkt. Matuszyk 2018, s. 95-97.",
+    "input": {
+      "age": 45, "educationLevel": "secondary", "maritalStatus": "divorced", "dependents": 1,
+      "employmentType": "permanent", "employmentYears": 9, "monthlyIncome": 7500,
+      "existingMonthlyDebt": 300, "livingCosts": 2500, "loanAmount": 35000, "loanTermMonths": 48,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 0, "creditHistoryMonths": 60
+    }
+  },
+  {
+    "id": "TC-009",
+    "description": "UoP 5 lat dokładnie, brak opóźnień, umiarkowany dochód",
+    "expectedOutcome": "approve",
+    "expectedRationale": "Dokładnie próg 5 lat stażu (50 pkt max). Niski DStI ~23%, brak opóźnień. Profile graniczne przy 5 latach powinny być klasyfikowane jako 'approve'. Matuszyk 2018, s. 99.",
+    "input": {
+      "age": 33, "educationLevel": "higher", "maritalStatus": "single", "dependents": 0,
+      "employmentType": "permanent", "employmentYears": 5, "monthlyIncome": 7000,
+      "existingMonthlyDebt": 200, "livingCosts": 2200, "loanAmount": 35000, "loanTermMonths": 48,
+      "loanPurpose": "car", "propertyValue": 0,
+      "pastLoans": 1, "latePayments": 0, "creditHistoryMonths": 48
+    }
+  },
+  {
+    "id": "TC-010",
+    "description": "Wyższe wykształcenie, B2B 6 lat, niski DStI, brak opóźnień",
+    "expectedOutcome": "approve",
+    "expectedRationale": "B2B >5 lat (50 pkt), wyższe wykształcenie (40 pkt), DStI ~15%, historia 84 mc, brak opóźnień. Profil stabilny ekonomicznie. Matuszyk 2018, s. 99 — staż rekompensuje formę zatrudnienia.",
+    "input": {
+      "age": 36, "educationLevel": "higher", "maritalStatus": "married", "dependents": 0,
+      "employmentType": "b2b", "employmentYears": 6, "monthlyIncome": 13000,
+      "existingMonthlyDebt": 400, "livingCosts": 3500, "loanAmount": 60000, "loanTermMonths": 60,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 0, "creditHistoryMonths": 84
+    }
+  },
+  {
+    "id": "TC-011",
+    "description": "Bezrobotny — brak dochodu, duży kredyt",
+    "expectedOutcome": "reject",
+    "expectedRationale": "Brak zatrudnienia (0 pkt, Matuszyk 2018, s. 99). DStI > 1 (dochód 0). Scoring minimalny ~300 pkt. Odrzucenie automatyczne. Rekomendacja S KNF: brak zdolności obsługi zadłużenia.",
+    "input": {
+      "age": 25, "educationLevel": "basic", "maritalStatus": "single", "dependents": 0,
+      "employmentType": "unemployed", "employmentYears": 0, "monthlyIncome": 500,
+      "existingMonthlyDebt": 0, "livingCosts": 1500, "loanAmount": 30000, "loanTermMonths": 36,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 0, "latePayments": 0, "creditHistoryMonths": 0
+    }
+  },
+  {
+    "id": "TC-012",
+    "description": "DStI 65% — override KNF, niezależnie od scoringu",
+    "expectedOutcome": "manual",
+    "expectedRationale": "DStI > 50% powoduje override do 'manual' niezależnie od wyniku scoringu — Rekomendacja S KNF (uchwała 242/2023, §8). Nawet dobry profil musi przejść przez analityka.",
+    "input": {
+      "age": 40, "educationLevel": "higher", "maritalStatus": "married", "dependents": 1,
+      "employmentType": "permanent", "employmentYears": 8, "monthlyIncome": 5000,
+      "existingMonthlyDebt": 1500, "livingCosts": 1500, "loanAmount": 80000, "loanTermMonths": 24,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 0, "creditHistoryMonths": 72
+    }
+  },
+  {
+    "id": "TC-013",
+    "description": "Umowa zlecenie, 4+ opóźnienia w spłacie — zła historia",
+    "expectedOutcome": "reject",
+    "expectedRationale": "4 opóźnienia zerują kategorię historii kredytowej (0 pkt). Kontrakt (30 pkt) przy słabym profilu demograficznym skutkuje scoring < 550 pkt. Matuszyk 2018, s. 102 — wiele opóźnień jako silny predyktor defaultu.",
+    "input": {
+      "age": 28, "educationLevel": "basic", "maritalStatus": "single", "dependents": 3,
+      "employmentType": "contract", "employmentYears": 1, "monthlyIncome": 3500,
+      "existingMonthlyDebt": 600, "livingCosts": 2000, "loanAmount": 40000, "loanTermMonths": 60,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 0, "latePayments": 4, "creditHistoryMonths": 18
+    }
+  },
+  {
+    "id": "TC-014",
+    "description": "18 lat, brak historii, bardzo duży kredyt, mały dochód",
+    "expectedOutcome": "reject",
+    "expectedRationale": "Wiek 18 lat (15 pkt najniższe), brak historii kredytowej (20 pkt), niski dochód, wysoki DStI ~80%. Thomas, Crook, Edelman 2017, s. 67 — młody wiek + brak historii = wysoka niepewność default.",
+    "input": {
+      "age": 18, "educationLevel": "basic", "maritalStatus": "single", "dependents": 0,
+      "employmentType": "contract", "employmentYears": 0, "monthlyIncome": 2500,
+      "existingMonthlyDebt": 0, "livingCosts": 1500, "loanAmount": 100000, "loanTermMonths": 60,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 0, "latePayments": 0, "creditHistoryMonths": 0
+    }
+  },
+  {
+    "id": "TC-015",
+    "description": "Dochód dyspozycyjny ujemny — koszty przekraczają dochód",
+    "expectedOutcome": "manual",
+    "expectedRationale": "Dochód dyspozycyjny = 4000 - 500 - 3800 - rata ≈ ujemny. Override do 'manual' niezależnie od DStI. Rekomendacja S KNF (uchwała 242/2023) — brak nadwyżki po pokryciu kosztów życia.",
+    "input": {
+      "age": 35, "educationLevel": "secondary", "maritalStatus": "married", "dependents": 2,
+      "employmentType": "permanent", "employmentYears": 3, "monthlyIncome": 4000,
+      "existingMonthlyDebt": 500, "livingCosts": 3800, "loanAmount": 20000, "loanTermMonths": 48,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 1, "latePayments": 0, "creditHistoryMonths": 36
+    }
+  },
+  {
+    "id": "TC-016",
+    "description": "Niski dochód, duża kwota kredytu, długi termin — zły stosunek DStI",
+    "expectedOutcome": "reject",
+    "expectedRationale": "Dochód 3500, rata ~520 + dług 800 = DStI ~37%, ale scoring bardzo niski przez: kontrakt (30 pkt), podstawowe (10 pkt), 5 dependents (0 pkt), wiek 21 (15 pkt). Scoring < 550 pkt. Matuszyk 2018, s. 94.",
+    "input": {
+      "age": 21, "educationLevel": "basic", "maritalStatus": "single", "dependents": 5,
+      "employmentType": "contract", "employmentYears": 1, "monthlyIncome": 3500,
+      "existingMonthlyDebt": 800, "livingCosts": 1500, "loanAmount": 50000, "loanTermMonths": 120,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 0, "latePayments": 0, "creditHistoryMonths": 6
+    }
+  },
+  {
+    "id": "TC-017",
+    "description": "Wiele osób na utrzymaniu (4), niski dochód, kontrakt",
+    "expectedOutcome": "reject",
+    "expectedRationale": "4 dependents (0 pkt, Matuszyk 2018 s. 98), niski dochód 4000, kontrakt (30 pkt), podstawowe wykształcenie (10 pkt). Scoring < 550 pkt. Dochód dyspozycyjny bardzo niski.",
+    "input": {
+      "age": 32, "educationLevel": "basic", "maritalStatus": "married", "dependents": 4,
+      "employmentType": "contract", "employmentYears": 2, "monthlyIncome": 4000,
+      "existingMonthlyDebt": 400, "livingCosts": 3000, "loanAmount": 30000, "loanTermMonths": 60,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 1, "latePayments": 1, "creditHistoryMonths": 24
+    }
+  },
+  {
+    "id": "TC-018",
+    "description": "Bardzo zła historia kredytowa — 5 opóźnień, brak stałego zatrudnienia",
+    "expectedOutcome": "reject",
+    "expectedRationale": "5 opóźnień zeruje historię (0 pkt), brak stałego zatrudnienia, niski dochód. Thomas, Crook, Edelman 2017, s. 47 — liczba opóźnień jest najsilniejszym predyktorem ryzyka defaultu.",
+    "input": {
+      "age": 35, "educationLevel": "vocational", "maritalStatus": "divorced", "dependents": 2,
+      "employmentType": "contract", "employmentYears": 1, "monthlyIncome": 4500,
+      "existingMonthlyDebt": 1000, "livingCosts": 2000, "loanAmount": 25000, "loanTermMonths": 36,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 3, "latePayments": 5, "creditHistoryMonths": 36
+    }
+  },
+  {
+    "id": "TC-019",
+    "description": "DStI 35%, scoring graniczny 580-640 — strefa manual",
+    "expectedOutcome": "manual",
+    "expectedRationale": "DStI 35% bezpieczne, ale scoring w przedziale 550-699 z powodu: młody wiek (35 pkt), kontrakt (30 pkt), krótki staż. Zgodnie z progami z Matuszyk 2018, rozdz. 6.",
+    "input": {
+      "age": 26, "educationLevel": "secondary", "maritalStatus": "single", "dependents": 0,
+      "employmentType": "contract", "employmentYears": 2, "monthlyIncome": 5500,
+      "existingMonthlyDebt": 300, "livingCosts": 2000, "loanAmount": 35000, "loanTermMonths": 48,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 0, "latePayments": 0, "creditHistoryMonths": 18
+    }
+  },
+  {
+    "id": "TC-020",
+    "description": "Kredyt hipoteczny, LtV 90%, graniczny profil — ryzyko LtV",
+    "expectedOutcome": "manual",
+    "expectedRationale": "LtV 90% wysokie (Rekomendacja S KNF — przy LtV >80% wymagana analiza), niski dochód, duże zobowiązania. DStI ~42%. Scoring w strefie manual (550-699). KNF uchwała 242/2023.",
+    "input": {
+      "age": 30, "educationLevel": "secondary", "maritalStatus": "married", "dependents": 1,
+      "employmentType": "permanent", "employmentYears": 3, "monthlyIncome": 6000,
+      "existingMonthlyDebt": 500, "livingCosts": 2500, "loanAmount": 270000, "loanTermMonths": 300,
+      "loanPurpose": "housing", "propertyValue": 300000,
+      "pastLoans": 0, "latePayments": 0, "creditHistoryMonths": 24
+    }
+  },
+  {
+    "id": "TC-021",
+    "description": "Niedoświadczony pracownik, kontrakt, krótki staż <1 rok",
+    "expectedOutcome": "reject",
+    "expectedRationale": "Staż <1 rok (5 pkt najniższe), kontrakt (30 pkt), wiek 22 (15 pkt), brak historii (20 pkt). Scoring < 550 pkt. Matuszyk 2018, s. 99 — brak stabilności zatrudnienia jako kluczowy czynnik ryzyka.",
+    "input": {
+      "age": 22, "educationLevel": "secondary", "maritalStatus": "single", "dependents": 0,
+      "employmentType": "contract", "employmentYears": 0, "monthlyIncome": 3800,
+      "existingMonthlyDebt": 200, "livingCosts": 1800, "loanAmount": 20000, "loanTermMonths": 36,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 0, "latePayments": 0, "creditHistoryMonths": 3
+    }
+  },
+  {
+    "id": "TC-022",
+    "description": "DStI 52% — override KNF, nieco powyżej progu 50%",
+    "expectedOutcome": "manual",
+    "expectedRationale": "DStI przekracza 50% o 2 pp → override do 'manual'. Zgodnie z Rekomendacją S KNF (uchwała 242/2023, §8) każde przekroczenie progu 50% wymaga decyzji analityka.",
+    "input": {
+      "age": 38, "educationLevel": "secondary", "maritalStatus": "married", "dependents": 2,
+      "employmentType": "permanent", "employmentYears": 5, "monthlyIncome": 6000,
+      "existingMonthlyDebt": 1000, "livingCosts": 2000, "loanAmount": 80000, "loanTermMonths": 36,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 0, "creditHistoryMonths": 48
+    }
+  },
+  {
+    "id": "TC-023",
+    "description": "Scoring graniczny 600-650 — strefa manual, dobry profil z minusami",
+    "expectedOutcome": "manual",
+    "expectedRationale": "Profil mieszany: dobre zatrudnienie (UoP 4 lata) ale jedno opóźnienie (-20 pkt historii) i 3 dependents (0 pkt). Scoring w przedziale 550-699. Matuszyk 2018, rozdz. 6.",
+    "input": {
+      "age": 34, "educationLevel": "secondary", "maritalStatus": "married", "dependents": 3,
+      "employmentType": "permanent", "employmentYears": 4, "monthlyIncome": 7000,
+      "existingMonthlyDebt": 600, "livingCosts": 2800, "loanAmount": 40000, "loanTermMonths": 48,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 2, "latePayments": 1, "creditHistoryMonths": 36
+    }
+  },
+  {
+    "id": "TC-024",
+    "description": "Konsolidacja, przeciętny profil — scoring w strefie manual",
+    "expectedOutcome": "manual",
+    "expectedRationale": "Profil przeciętny: B2B 3 lata (30 pkt dla <5 lat), DStI 32%, historia 24 mc (50 pkt). Scoring w przedziale 550-699. Cel konsolidacji (15 pkt). Matuszyk 2018, s. 101.",
+    "input": {
+      "age": 41, "educationLevel": "vocational", "maritalStatus": "divorced", "dependents": 1,
+      "employmentType": "b2b", "employmentYears": 3, "monthlyIncome": 6500,
+      "existingMonthlyDebt": 800, "livingCosts": 2500, "loanAmount": 35000, "loanTermMonths": 48,
+      "loanPurpose": "consolidation", "propertyValue": 0,
+      "pastLoans": 3, "latePayments": 0, "creditHistoryMonths": 24
+    }
+  },
+  {
+    "id": "TC-025",
+    "description": "Emeryt, niski dochód, wysokie koszty utrzymania — scoring graniczny",
+    "expectedOutcome": "reject",
+    "expectedRationale": "Pension (20 pkt), wiek 70+ (15 pkt), podstawowe wykształcenie (10 pkt), niski dochód, 3 dependents (0 pkt). Scoring < 550 pkt mimo braku opóźnień. Matuszyk 2018, s. 97-99 — demografia obniża scoring.",
+    "input": {
+      "age": 72, "educationLevel": "basic", "maritalStatus": "widowed", "dependents": 3,
+      "employmentType": "pension", "employmentYears": 0, "monthlyIncome": 3000,
+      "existingMonthlyDebt": 200, "livingCosts": 2200, "loanAmount": 15000, "loanTermMonths": 36,
+      "loanPurpose": "consumer", "propertyValue": 0,
+      "pastLoans": 1, "latePayments": 0, "creditHistoryMonths": 60
+    }
+  }
+]

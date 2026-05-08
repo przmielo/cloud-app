@@ -15,13 +15,15 @@ function scoreAge(age) {
   return 15;
 }
 
+// Matuszyk 2018, s. 97 — wykształcenie jako zmienna proxi stabilności
 function scoreEducation(level) {
-  const map = { higher: 40, secondary: 25, basic: 10 };
+  const map = { higher: 40, secondary: 25, vocational: 20, basic: 10 };
   return map[level] ?? 10;
 }
 
+// Matuszyk 2018, s. 98 — stan cywilny jako wskaźnik stabilności życiowej
 function scoreMaritalStatus(status) {
-  const map = { married: 20, single: 15, divorced: 10 };
+  const map = { married: 20, single: 15, widowed: 15, divorced: 10 };
   return map[status] ?? 10;
 }
 
@@ -32,8 +34,9 @@ function scoreDependents(count) {
   return 0;
 }
 
+// Matuszyk 2018, s. 99 — forma zatrudnienia jako wskaźnik stabilności dochodu
 function scoreEmploymentType(type) {
-  const map = { permanent: 60, self: 40, contract: 30, unemployed: 0 };
+  const map = { permanent: 60, b2b: 50, contract: 30, pension: 20, unemployed: 0 };
   return map[type] ?? 0;
 }
 
@@ -52,16 +55,26 @@ function scoreDstI(dsti) {
   return 0;
 }
 
-function scoreCreditHistory(hasCreditHistory, pastDelays) {
-  if (!hasCreditHistory) return 20; // neutral – no history
-  if (pastDelays === 0)  return 80;
-  if (pastDelays === 1)  return 40;
-  if (pastDelays === 2)  return 10;
-  return 0;
+// Matuszyk 2018, s. 102 — długość historii kredytowej jako miara wiarygodności
+// creditHistoryMonths: int (0 = brak historii)
+// latePayments: liczba opóźnień >30 dni w ostatnich 24 miesiącach
+function scoreCreditHistory(creditHistoryMonths, latePayments) {
+  let base;
+  if (creditHistoryMonths === 0)        base = 20; // brak historii – neutralne
+  else if (creditHistoryMonths < 12)    base = 30; // krótka historia
+  else if (creditHistoryMonths < 36)    base = 50; // umiarkowana historia
+  else                                   base = 80; // długa historia ≥ 36 mc
+
+  // Kara za opóźnienia w spłatach
+  if (latePayments === 0)  return base;
+  if (latePayments === 1)  return Math.max(0, base - 20);
+  if (latePayments === 2)  return Math.max(0, base - 40);
+  return 0; // ≥ 3 opóźnień — zeruje całą kategorię
 }
 
+// Matuszyk 2018, s. 103 — cel kredytu jako wskaźnik ryzyka
 function scoreLoanPurpose(purpose) {
-  const map = { housing: 30, car: 20, consumer: 10, other: 5 };
+  const map = { housing: 30, car: 20, consolidation: 15, consumer: 10, other: 5 };
   return map[purpose] ?? 5;
 }
 
@@ -76,7 +89,7 @@ function calculateScore(data, dsti) {
     scoreEmploymentType(data.employmentType) +
     scoreEmploymentYears(data.employmentYears) +
     scoreDstI(dsti) +
-    scoreCreditHistory(data.hasCreditHistory, data.pastDelays) +
+    scoreCreditHistory(data.creditHistoryMonths, data.latePayments) +
     scoreLoanPurpose(data.loanPurpose);
 
   const maxRaw = 450;
@@ -85,8 +98,16 @@ function calculateScore(data, dsti) {
 }
 
 // Progi decyzyjne (Matuszyk 2018, rozdz. 6)
-function makeDecision(score, dsti) {
-  // DStI override per Rekomendacja S KNF
+// disposableIncome: dochód dyspozycyjny po odjęciu zobowiązań, kosztów i raty
+function makeDecision(score, dsti, disposableIncome) {
+  // Override: dochód dyspozycyjny ≤ 0 — Rekomendacja S KNF
+  if (disposableIncome <= 0) {
+    return {
+      outcome: 'manual',
+      reason: 'Dochód dyspozycyjny ≤ 0 — wymagana analiza manualna zgodnie z Rekomendacją S KNF.',
+    };
+  }
+  // DStI override per Rekomendacja S KNF (uchwała 242/2023)
   if (dsti > 0.5) {
     return { outcome: 'manual', reason: 'Wskaźnik DStI przekracza 50% – wymagana analiza manualna zgodnie z Rekomendacją S KNF.' };
   }
@@ -99,4 +120,4 @@ function makeDecision(score, dsti) {
   return { outcome: 'reject', reason: 'Scoring poniżej 550 pkt – automatyczne odrzucenie.' };
 }
 
-module.exports = { calculateScore, makeDecision };
+module.exports = { calculateScore, makeDecision, scoreCreditHistory };

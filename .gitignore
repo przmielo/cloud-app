@@ -18,3 +18,9 @@ publish/
 
 # Frontend build
 frontend/dist/
+
+# Wyniki testów wydajnościowych i modelu (duże pliki CSV/JSON)
+tests/load/results/*
+!tests/load/results/.gitkeep
+tests/model-evaluation/results/*
+!tests/model-evaluation/results/.gitkeep

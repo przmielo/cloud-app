@@ -56,12 +56,14 @@ public class LoanApplicationController : ControllerBase
             EmploymentYears = dto.EmploymentYears,
             MonthlyIncome = dto.MonthlyIncome,
             ExistingMonthlyDebt = dto.ExistingMonthlyDebt,
+            LivingCosts = dto.LivingCosts,
             LoanAmount = dto.LoanAmount,
             LoanTermMonths = dto.LoanTermMonths,
             LoanPurpose = dto.LoanPurpose,
             PropertyValue = dto.PropertyValue,
-            HasCreditHistory = dto.HasCreditHistory,
-            PastDelays = dto.PastDelays
+            PastLoans = dto.PastLoans,
+            LatePayments = dto.LatePayments,
+            CreditHistoryMonths = dto.CreditHistoryMonths
         };
 
         _context.LoanApplications.Add(application);
@@ -73,7 +75,9 @@ public class LoanApplicationController : ControllerBase
             {
                 Score = result.Score,
                 DstI = result.DstI,
+                Pti = result.Pti,
                 MonthlyInstalment = result.MonthlyInstalment,
+                DisposableIncome = result.DisposableIncome,
                 Outcome = result.Outcome,
                 Reason = result.Reason
             }
@@ -99,16 +103,23 @@ public class LoanApplicationController : ControllerBase
 
         var totalDebt = app.ExistingMonthlyDebt + instalment;
         var dsti = app.MonthlyIncome > 0 ? totalDebt / app.MonthlyIncome : 1m;
+        var pti = app.MonthlyIncome > 0 ? instalment / app.MonthlyIncome : 1m;
+        var disposableIncome = app.MonthlyIncome - app.ExistingMonthlyDebt - app.LivingCosts - instalment;
 
         string outcome;
         string reason;
 
-        if (dsti > 0.5m)
+        if (disposableIncome <= 0)
+        {
+            outcome = "manual";
+            reason = "Dochód dyspozycyjny ≤ 0 — wymagana analiza manualna zgodnie z Rekomendacją S KNF.";
+        }
+        else if (dsti > 0.5m)
         {
             outcome = "manual";
             reason = "Wskaźnik DStI przekracza 50% – wymagana analiza manualna.";
         }
-        else if (app.PastDelays > 2 || app.EmploymentType == "unemployed")
+        else if (app.LatePayments > 2 || app.EmploymentType == "unemployed")
         {
             outcome = "reject";
             reason = "Negatywna historia kredytowa lub brak zatrudnienia.";
@@ -123,7 +134,9 @@ public class LoanApplicationController : ControllerBase
         {
             Score = 600,
             DstI = dsti,
+            Pti = pti,
             MonthlyInstalment = instalment,
+            DisposableIncome = disposableIncome,
             Outcome = outcome,
             Reason = reason
         };
@@ -141,17 +154,21 @@ public class LoanApplicationController : ControllerBase
         EmploymentYears = app.EmploymentYears,
         MonthlyIncome = app.MonthlyIncome,
         ExistingMonthlyDebt = app.ExistingMonthlyDebt,
+        LivingCosts = app.LivingCosts,
         LoanAmount = app.LoanAmount,
         LoanTermMonths = app.LoanTermMonths,
         LoanPurpose = app.LoanPurpose,
         PropertyValue = app.PropertyValue,
-        HasCreditHistory = app.HasCreditHistory,
-        PastDelays = app.PastDelays,
+        PastLoans = app.PastLoans,
+        LatePayments = app.LatePayments,
+        CreditHistoryMonths = app.CreditHistoryMonths,
         Decision = app.Decision == null ? null : new CreditDecisionDto
         {
             Score = app.Decision.Score,
             DstI = app.Decision.DstI,
+            Pti = app.Decision.Pti,
             MonthlyInstalment = app.Decision.MonthlyInstalment,
+            DisposableIncome = app.Decision.DisposableIncome,
             Outcome = app.Decision.Outcome,
             Reason = app.Decision.Reason,
             DecidedAt = app.Decision.DecidedAt

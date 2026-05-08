@@ -13,12 +13,14 @@ const emptyForm: LoanApplicationCreateDto = {
   employmentYears: 3,
   monthlyIncome: 5000,
   existingMonthlyDebt: 0,
+  livingCosts: 2000,
   loanAmount: 50000,
   loanTermMonths: 60,
   loanPurpose: 'consumer',
   propertyValue: 0,
-  hasCreditHistory: false,
-  pastDelays: 0,
+  pastLoans: 0,
+  latePayments: 0,
+  creditHistoryMonths: 0,
 };
 
 export default function LoanApplicationForm() {
@@ -67,6 +69,7 @@ export default function LoanApplicationForm() {
             <Field label="Wykształcenie">
               <select value={form.educationLevel} onChange={e => set('educationLevel', e.target.value)} style={styles.input}>
                 <option value="basic">Podstawowe</option>
+                <option value="vocational">Zawodowe</option>
                 <option value="secondary">Średnie</option>
                 <option value="higher">Wyższe</option>
               </select>
@@ -76,6 +79,7 @@ export default function LoanApplicationForm() {
                 <option value="single">Kawaler/Panna</option>
                 <option value="married">Żonaty/Zamężna</option>
                 <option value="divorced">Rozwiedziony/a</option>
+                <option value="widowed">Wdowiec/Wdowa</option>
               </select>
             </Field>
             <Field label="Liczba osób na utrzymaniu">
@@ -90,8 +94,9 @@ export default function LoanApplicationForm() {
             <Field label="Forma zatrudnienia">
               <select value={form.employmentType} onChange={e => set('employmentType', e.target.value)} style={styles.input}>
                 <option value="permanent">Umowa o pracę (stała)</option>
+                <option value="b2b">B2B / Działalność gospodarcza</option>
                 <option value="contract">Umowa zlecenie/o dzieło</option>
-                <option value="self">Działalność gospodarcza</option>
+                <option value="pension">Emerytura/Renta</option>
                 <option value="unemployed">Bezrobotny/a</option>
               </select>
             </Field>
@@ -110,17 +115,18 @@ export default function LoanApplicationForm() {
             <Field label="Łączne miesięczne raty istniejących kredytów (PLN)">
               <input type="number" value={form.existingMonthlyDebt} onChange={e => set('existingMonthlyDebt', +e.target.value)} style={styles.input} min={0} />
             </Field>
-            <Field label="Historia kredytowa">
-              <label style={styles.checkLabel}>
-                <input type="checkbox" checked={form.hasCreditHistory} onChange={e => set('hasCreditHistory', e.target.checked)} />
-                &nbsp;Posiadam historię kredytową w BIK
-              </label>
+            <Field label="Miesięczne koszty utrzymania (PLN)">
+              <input type="number" value={form.livingCosts} onChange={e => set('livingCosts', +e.target.value)} style={styles.input} min={0} />
             </Field>
-            {form.hasCreditHistory && (
-              <Field label="Liczba opóźnień w spłacie w przeszłości">
-                <input type="number" value={form.pastDelays} onChange={e => set('pastDelays', +e.target.value)} style={styles.input} min={0} />
-              </Field>
-            )}
+            <Field label="Liczba dotychczasowych kredytów">
+              <input type="number" value={form.pastLoans} onChange={e => set('pastLoans', +e.target.value)} style={styles.input} min={0} />
+            </Field>
+            <Field label="Długość historii kredytowej (miesiące)">
+              <input type="number" value={form.creditHistoryMonths} onChange={e => set('creditHistoryMonths', +e.target.value)} style={styles.input} min={0} />
+            </Field>
+            <Field label="Liczba opóźnień w spłacie &gt;30 dni (ostatnie 24 mies.)">
+              <input type="number" value={form.latePayments} onChange={e => set('latePayments', +e.target.value)} style={styles.input} min={0} />
+            </Field>
           </>
         )}
 
@@ -138,6 +144,7 @@ export default function LoanApplicationForm() {
                 <option value="housing">Mieszkaniowy</option>
                 <option value="car">Samochodowy</option>
                 <option value="consumer">Konsumpcyjny</option>
+                <option value="consolidation">Konsolidacyjny</option>
                 <option value="other">Inny</option>
               </select>
             </Field>
@@ -193,7 +200,6 @@ const styles: Record<string, React.CSSProperties> = {
   card: { background: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '28px' },
   sectionTitle: { color: '#1d4ed8', fontSize: '1.1rem', marginBottom: '20px' },
   input: { width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '1rem', boxSizing: 'border-box' },
-  checkLabel: { display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' },
   nav: { display: 'flex', justifyContent: 'space-between', marginTop: '24px' },
   btnPrimary: { background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 28px', fontSize: '1rem', cursor: 'pointer' },
   btnSecondary: { background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '8px', padding: '10px 28px', fontSize: '1rem', cursor: 'pointer' },

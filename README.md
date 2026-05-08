@@ -70,9 +70,9 @@ Produkcja: `https://cloud-task-manager-api-pk-dfg9cvgnczb3fce3.germanywestcentra
 
 | Metoda | Endpoint | Opis |
 | :-- | :-- | :-- |
-| POST | `/api/loan-applications` | Złożenie wniosku, scoring, zapis decyzji |
-| GET | `/api/loan-applications` | Lista wniosków |
-| GET | `/api/loan-applications/{id}` | Szczegóły wniosku z decyzją |
+| POST | `/api/loanapplication` | Złożenie wniosku, scoring, zapis decyzji |
+| GET | `/api/loanapplication` | Lista wniosków |
+| GET | `/api/loanapplication/{id}` | Szczegóły wniosku z decyzją |
 
 ### Scoring service — `cloud-task-manager-scoring-pk`
 Produkcja: `https://cloud-task-manager-scoring-pk.azurewebsites.net`

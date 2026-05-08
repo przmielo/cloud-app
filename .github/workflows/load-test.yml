@@ -1,0 +1,30 @@
+name: Load Test (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: 'API URL (puste = produkcja Azure)'
+        required: false
+        type: string
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 load test
+        run: k6 run --out csv=tests/load/results/raw.csv tests/load/load-test.js
+        env:
+          API_URL: ${{ inputs.api_url }}
+
+      - name: Analyze results
+        run: node tests/load/analyze-results.js
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results-${{ github.run_number }}
+          path: tests/load/results/

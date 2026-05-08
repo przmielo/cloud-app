@@ -26,6 +26,10 @@ namespace CloudBackend.Data
                 .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<LoanApplication>()
+                .Property(a => a.LivingCosts)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<LoanApplication>()
                 .Property(a => a.LoanAmount)
                 .HasColumnType("decimal(18,2)");
 
@@ -38,7 +42,15 @@ namespace CloudBackend.Data
                 .HasColumnType("decimal(18,4)");
 
             modelBuilder.Entity<CreditDecision>()
+                .Property(d => d.Pti)
+                .HasColumnType("decimal(18,4)");
+
+            modelBuilder.Entity<CreditDecision>()
                 .Property(d => d.MonthlyInstalment)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<CreditDecision>()
+                .Property(d => d.DisposableIncome)
                 .HasColumnType("decimal(18,2)");
         }
     }

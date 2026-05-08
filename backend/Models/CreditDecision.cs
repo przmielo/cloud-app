@@ -8,7 +8,9 @@ namespace CloudBackend.Models
 
         public int Score { get; set; }              // 300-850
         public decimal DstI { get; set; }           // Debt Service to Income ratio
+        public decimal Pti { get; set; }            // Payment to Income ratio
         public decimal MonthlyInstalment { get; set; }
+        public decimal DisposableIncome { get; set; } // Dochód dyspozycyjny (PLN)
 
         // approve / manual / reject
         public string Outcome { get; set; } = string.Empty;
