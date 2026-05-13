@@ -19,8 +19,9 @@ publish/
 # Frontend build
 frontend/dist/
 
-# Wyniki testów wydajnościowych i modelu (duże pliki CSV/JSON)
-tests/load/results/*
-!tests/load/results/.gitkeep
-tests/model-evaluation/results/*
-!tests/model-evaluation/results/.gitkeep
+# Wyniki testów — duże surowe pliki wykluczone, raporty/wykresy zachowane
+tests/load/results/raw.csv
+tests/load/results/*.zip
+
+# Playwright dependencies (skrypty zachowane, node_modules wykluczone)
+tests/screenshots/node_modules/

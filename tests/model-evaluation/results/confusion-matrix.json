@@ -1,0 +1,114 @@
+{
+  "matrix": {
+    "approve": {
+      "approve": 9,
+      "manual": 1,
+      "reject": 0
+    },
+    "manual": {
+      "approve": 0,
+      "manual": 7,
+      "reject": 0
+    },
+    "reject": {
+      "approve": 0,
+      "manual": 5,
+      "reject": 3
+    }
+  },
+  "metrics": {
+    "approve": {
+      "precision": 1,
+      "recall": 0.9,
+      "f1": 0.9473684210526316,
+      "support": 10,
+      "tp": 9,
+      "fp": 0,
+      "fn": 1
+    },
+    "manual": {
+      "precision": 0.5384615384615384,
+      "recall": 1,
+      "f1": 0.7000000000000001,
+      "support": 7,
+      "tp": 7,
+      "fp": 6,
+      "fn": 0
+    },
+    "reject": {
+      "precision": 1,
+      "recall": 0.375,
+      "f1": 0.5454545454545454,
+      "support": 8,
+      "tp": 3,
+      "fp": 0,
+      "fn": 5
+    }
+  },
+  "accuracy": 0.76,
+  "total": 25,
+  "correct": 19,
+  "errors": [
+    {
+      "id": "TC-003",
+      "description": "Emeryt z niską ratą, brak zobowiązań, długa historia kredytowa",
+      "expected": "approve",
+      "got": "manual",
+      "score": 667,
+      "dsti": 0.1221,
+      "disposableIncome": 2828.41,
+      "reason": "Scoring w przedziale 550-699 pkt – skierowanie do analizy manualnej."
+    },
+    {
+      "id": "TC-011",
+      "description": "Bezrobotny — brak dochodu, duży kredyt",
+      "expected": "reject",
+      "got": "manual",
+      "score": 441,
+      "dsti": 1.8526,
+      "disposableIncome": -1926.31,
+      "reason": "Dochód dyspozycyjny ≤ 0 — wymagana analiza manualna zgodnie z Rekomendacją S KNF."
+    },
+    {
+      "id": "TC-014",
+      "description": "18 lat, brak historii, bardzo duży kredyt, mały dochód",
+      "expected": "reject",
+      "got": "manual",
+      "score": 453,
+      "dsti": 0.792,
+      "disposableIncome": -980.12,
+      "reason": "Dochód dyspozycyjny ≤ 0 — wymagana analiza manualna zgodnie z Rekomendacją S KNF."
+    },
+    {
+      "id": "TC-017",
+      "description": "Wiele osób na utrzymaniu (4), niski dochód, kontrakt",
+      "expected": "reject",
+      "got": "manual",
+      "score": 606,
+      "dsti": 0.2485,
+      "disposableIncome": 5.96,
+      "reason": "Scoring w przedziale 550-699 pkt – skierowanie do analizy manualnej."
+    },
+    {
+      "id": "TC-021",
+      "description": "Niedoświadczony pracownik, kontrakt, krótki staż <1 rok",
+      "expected": "reject",
+      "got": "manual",
+      "score": 581,
+      "dsti": 0.2151,
+      "disposableIncome": 1182.46,
+      "reason": "Scoring w przedziale 550-699 pkt – skierowanie do analizy manualnej."
+    },
+    {
+      "id": "TC-025",
+      "description": "Emeryt, niski dochód, wysokie koszty utrzymania — scoring graniczny",
+      "expected": "reject",
+      "got": "manual",
+      "score": 587,
+      "dsti": 0.2211,
+      "disposableIncome": 136.84,
+      "reason": "Scoring w przedziale 550-699 pkt – skierowanie do analizy manualnej."
+    }
+  ],
+  "verdict": "❌ HIPOTEZA H2 ODRZUCONA — accuracy < 80%, wymagana analiza błędów"
+}

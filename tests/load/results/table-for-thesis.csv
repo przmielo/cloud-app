@@ -1,0 +1,4 @@
+Etap,Liczba VU,Średni czas (ms),95p (ms),99p (ms),RPS,% błędów
+Etap 10 VU,10,198,341,522,N/A,N/A
+Etap 50 VU,50,607,1288,2198,N/A,N/A
+Etap 100 VU,100,1879,4191,5912,N/A,N/A

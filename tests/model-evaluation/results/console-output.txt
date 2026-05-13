@@ -1,0 +1,55 @@
+
+Ewaluacja modelu scoringowego na 25 przypadkach testowych
+URL: https://cloud-task-manager-scoring-pk-ahezehfdhubve9ex.germanywestcentral-01.azurewebsites.net
+
+  [TC-001] ✓ Idealny kandydat: UoP 10 lat, wysokie dochody, długa histori
+  [TC-002] ✓ Stabilny B2B 7 lat, wyższe wykształcenie, długa historia, ni
+  [TC-003] ✗ Emeryt z niską ratą, brak zobowiązań, długa historia kredyto → BŁĄD: oczekiwano approve, model dał manual (score=667, DStI=12.2%, disp=2828.41)
+  [TC-004] ✓ Młody specjalista 30 lat, UoP 5 lat, niski DStI, dobre wyksz
+  [TC-005] ✓ Rodzina z 2 dziećmi, kredyt hipoteczny LtV 70%, niski DStI
+  [TC-006] ✓ Dobry profil, kredyt na auto, UoP 6 lat
+  [TC-007] ✓ Konsolidacja małej kwoty, wysoki dochód, brak opóźnień
+  [TC-008] ✓ Średni wiek, UoP 9 lat, dobre wskaźniki finansowe
+  [TC-009] ✓ UoP 5 lat dokładnie, brak opóźnień, umiarkowany dochód
+  [TC-010] ✓ Wyższe wykształcenie, B2B 6 lat, niski DStI, brak opóźnień
+  [TC-011] ✗ Bezrobotny — brak dochodu, duży kredyt → BŁĄD: oczekiwano reject, model dał manual (score=441, DStI=185.3%, disp=-1926.31)
+  [TC-012] ✓ DStI 65% — override KNF, niezależnie od scoringu
+  [TC-013] ✓ Umowa zlecenie, 4+ opóźnienia w spłacie — zła historia
+  [TC-014] ✗ 18 lat, brak historii, bardzo duży kredyt, mały dochód → BŁĄD: oczekiwano reject, model dał manual (score=453, DStI=79.2%, disp=-980.12)
+  [TC-015] ✓ Dochód dyspozycyjny ujemny — koszty przekraczają dochód
+  [TC-016] ✓ Niski dochód, duża kwota kredytu, długi termin — zły stosune
+  [TC-017] ✗ Wiele osób na utrzymaniu (4), niski dochód, kontrakt → BŁĄD: oczekiwano reject, model dał manual (score=606, DStI=24.9%, disp=5.96)
+  [TC-018] ✓ Bardzo zła historia kredytowa — 5 opóźnień, brak stałego zat
+  [TC-019] ✓ DStI 35%, scoring graniczny 580-640 — strefa manual
+  [TC-020] ✓ Kredyt hipoteczny, LtV 90%, graniczny profil — ryzyko LtV
+  [TC-021] ✗ Niedoświadczony pracownik, kontrakt, krótki staż <1 rok → BŁĄD: oczekiwano reject, model dał manual (score=581, DStI=21.5%, disp=1182.46)
+  [TC-022] ✓ DStI 52% — override KNF, nieco powyżej progu 50%
+  [TC-023] ✓ Scoring graniczny 600-650 — strefa manual, dobry profil z mi
+  [TC-024] ✓ Konsolidacja, przeciętny profil — scoring w strefie manual
+  [TC-025] ✗ Emeryt, niski dochód, wysokie koszty utrzymania — scoring gr → BŁĄD: oczekiwano reject, model dał manual (score=587, DStI=22.1%, disp=136.84)
+
+=== MACIERZ KONFUZJI ===
+
+|  | Predicted APPROVE | Predicted MANUAL | Predicted REJECT |
+|---|---|---|---|
+| **Actual APPROVE** | 9 | 1 | 0 |
+| **Actual MANUAL**  | 0  | 7  | 0  |
+| **Actual REJECT**  | 0  | 5  | 3  |
+
+=== METRYKI ===
+
+| Klasa | Precision | Recall | F1 | Support |
+|---|---|---|---|---|
+| APPROVE | 100.0% | 90.0% | 94.7% | 10 |
+| MANUAL | 53.8% | 100.0% | 70.0% | 7 |
+| REJECT | 100.0% | 37.5% | 54.5% | 8 |
+| **Accuracy** | | | **76.0%** | **25** |
+
+❌ HIPOTEZA H2 ODRZUCONA — accuracy < 80%, wymagana analiza błędów
+
+Dokładność: 76.0% (19/25)
+
+Pliki wyjściowe:
+  - tests/model-evaluation/results/confusion-matrix.json
+  - tests/model-evaluation/results/metrics.csv
+  - tests/model-evaluation/results/report-for-thesis.md
